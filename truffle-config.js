@@ -5,9 +5,6 @@ const mnemonic = process.env.MNEMONIC;
 
 
 module.exports = {
-  //@dev - For idle-contract
-  plugins: ["truffle-security"],
-
   networks: {
     ropsten: {
       provider: () => new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/' + process.env.INFURA_KEY),
@@ -17,7 +14,6 @@ module.exports = {
     },
     kovan: {
       provider: () => new HDWalletProvider(mnemonic, 'https://kovan.infura.io/v3/' + process.env.INFURA_KEY),
-      //provider: () => new LedgerWalletProvider({...ledgerOptions, networkId: 42}, 'https://kovan.infura.io/v3/' + process.env.INFURA_KEY),
       network_id: '42',
       gas: 6465030,
       gasPrice: 5000000000, // 5 gwei
@@ -33,8 +29,7 @@ module.exports = {
     },
     // main ethereum network(mainnet)
     live: {
-      // provider: () => new HDWalletProvider(mnemonic, "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY),
-      provider: () => new LedgerWalletProvider({...ledgerOptions, networkId: 1}, 'https://mainnet.infura.io/v3/' + process.env.INFURA_KEY),
+      provider: () => new HDWalletProvider(mnemonic, "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY),
       network_id: 1,
       gas: 5500000,
       gasPrice: 2000000000 // 2 gwei
@@ -57,7 +52,8 @@ module.exports = {
 
   compilers: {
     solc: {
-      //version: "0.6.0",
+      version: "^0.6.0",
+      parser: "solcjs",  // Leverages solc-js purely for speedy parsing
       settings: {
         optimizer: {
           enabled: true,

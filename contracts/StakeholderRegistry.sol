@@ -1,4 +1,4 @@
-pragma solidity ^0.5.11;
+pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 
@@ -14,9 +14,6 @@ import "./lib/OwnableOriginal.sol";
 import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
-// DAI
-import "./DAI/dai.sol";
-
 
 /***
  * @notice - This contract is that ...
@@ -26,14 +23,10 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     //@dev - Token Address
     address DAI_ADDRESS;
-
-    Dai public dai;  //@dev - dai.sol
-    IERC20 public erc20;
+    IERC20 public dai;
 
     constructor(address _erc20) public {
-        dai = Dai(_erc20);
-        erc20 = IERC20(_erc20);
-
+        dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
     }
 

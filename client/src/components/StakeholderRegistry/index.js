@@ -71,7 +71,8 @@ export default class StakeholderRegistry extends Component {
         let Dai = {};
         try {
           StakeholderRegistry = require("../../../../build/contracts/StakeholderRegistry.json");  // Load artifact-file of StakeholderRegistry
-          Dai = require("../../../../build/contracts/Dai.json");               //@dev - DAI（Underlying asset）
+          Dai = require("../../../../build/contracts/IERC20.json");    //@dev - DAI
+          //Dai = require("../../../../build/contracts/Dai.json");  //@dev - DAI
         } catch (e) {
           console.log(e);
         }
@@ -138,7 +139,6 @@ export default class StakeholderRegistry extends Component {
                 isMetaMask, 
                 stakeholder_registry: instanceStakeholderRegistry,
                 dai: instanceDai,
-                idle_dai: instanceIdleDAI,
                 STAKEHOLDER_REGISTRY_ADDRESS: STAKEHOLDER_REGISTRY_ADDRESS,
                 DAI_ADDRESS: DAI_ADDRESS,
               }, () => {

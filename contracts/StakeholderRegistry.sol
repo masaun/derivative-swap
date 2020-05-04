@@ -14,6 +14,10 @@ import "./lib/OwnableOriginal.sol";
 import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
+// SyntheticToken from UMA
+import "./uma/contracts/financial-templates/implementation/SyntheticToken.sol";
+
+
 
 /***
  * @notice - This contract is that ...
@@ -24,10 +28,13 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //@dev - Token Address
     address DAI_ADDRESS;
     IERC20 public dai;
+    SyntheticToken public syntheticToken;
 
-    constructor(address _erc20) public {
+    constructor(address _erc20, address _syntheticToken) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
+
+        syntheticToken = SyntheticToken(_syntheticToken);
     }
 
 

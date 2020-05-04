@@ -15,8 +15,7 @@ import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
-import "./uma/contracts/financial-templates/implementation/SyntheticToken.sol";
-
+import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
 
 
 /***
@@ -28,15 +27,26 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //@dev - Token Address
     address DAI_ADDRESS;
     IERC20 public dai;
-    SyntheticToken public syntheticToken;
+    TokenFactory public tokenFactory;
 
     constructor(address _erc20, address _syntheticToken) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
 
-        syntheticToken = SyntheticToken(_syntheticToken);
+        tokenFactory = TokenFactory(_syntheticToken);
     }
 
+
+
+    function _createToken(
+        string _tokenName,
+        string _tokenSymbol,
+        uint8 _tokenDecimals
+    ) public returns (ExpandedIERC20 _newToken) {
+        ExpandedIERC20 _newToken = createToken(_tokenName, _tokenSymbol, _tokenDecimals);
+        return _newToken;
+    }
+    
 
     function balanceOfContract() public view returns (uint _balanceOfContract) {
         uint TEST_VALUE = 1;

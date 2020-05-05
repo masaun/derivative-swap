@@ -29,11 +29,11 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     IERC20 public dai;
     TokenFactory public tokenFactory;
 
-    constructor(address _erc20, address _syntheticToken) public {
+    constructor(address _erc20, address _tokenFactory) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
 
-        tokenFactory = TokenFactory(_syntheticToken);
+        tokenFactory = TokenFactory(_tokenFactory);
     }
 
 

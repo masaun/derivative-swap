@@ -36,8 +36,8 @@ export default class StakeholderRegistry extends Component {
     createToken = async () => {
         const { accounts, web3, dai, stakeholder_registry, token_factory } = this.state;
 
-        const _tokenName = "UMA Synthetic Gold May 2020";
-        const _tokenSymbol = "UMAGold_May2020";
+        const _tokenName = "UMA Synthetic Test Token May 2022";
+        const _tokenSymbol = "UMATEST_May2022";
         const _tokenDecimals = 18;
 
         let res1 = await token_factory.methods.createToken(_tokenName, _tokenSymbol, _tokenDecimals).send({ from: accounts[0] });
@@ -142,10 +142,10 @@ export default class StakeholderRegistry extends Component {
 
             //@dev - Create instance of TokenFactory.sol
             let instanceTokenFactory = null;
-            let TOKEN_FACTORY_ADDRESS = tokenAddressList["Kovan"]["UMAGold_May2020"]; //@dev - UMAGold_May2020（on Kovan）
+            let TOKEN_FACTORY_ADDRESS = contractAddressList["Kovan"]["UMA"]["TokenFactory"];  //@dev - TokenFactory.sol from UMA
             instanceTokenFactory = new web3.eth.Contract(
-              TokenFactory.abi,
-              DAI_ADDRESS,
+                TokenFactory.abi,
+                TOKEN_FACTORY_ADDRESS,
             );
             console.log('=== instanceTokenFactory ===', instanceTokenFactory);
 

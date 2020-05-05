@@ -39,11 +39,11 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function _createToken(
-        string _tokenName,
-        string _tokenSymbol,
+        string memory _tokenName,
+        string memory _tokenSymbol,
         uint8 _tokenDecimals
     ) public returns (ExpandedIERC20 _newToken) {
-        ExpandedIERC20 _newToken = createToken(_tokenName, _tokenSymbol, _tokenDecimals);
+        ExpandedIERC20 _newToken = tokenFactory.createToken(_tokenName, _tokenSymbol, _tokenDecimals);
         return _newToken;
     }
     

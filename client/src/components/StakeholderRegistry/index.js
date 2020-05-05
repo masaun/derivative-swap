@@ -32,6 +32,9 @@ export default class StakeholderRegistry extends Component {
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
 
+
+    
+
     _balanceOfContract = async () => {
         const { accounts, web3, dai, stakeholder_registry } = this.state;
 

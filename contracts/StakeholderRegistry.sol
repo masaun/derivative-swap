@@ -49,8 +49,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     
 
     function balanceOfContract() public view returns (uint _balanceOfContract) {
-        uint TEST_VALUE = 1;
-        return TEST_VALUE;
+        return address(this).balance;
     }
 
 }

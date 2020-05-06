@@ -89,6 +89,9 @@ export default class StakeholderRegistry extends Component {
           StakeholderRegistry = require("../../../../build/contracts/StakeholderRegistry.json");  // Load artifact-file of StakeholderRegistry
           Dai = require("../../../../build/contracts/IERC20.json");    //@dev - DAI
           TokenFactory = require("../../../../build/contracts/TokenFactory.json");  //@dev - TokenFactory.sol
+          ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
+          IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
+          Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol        
         } catch (e) {
           console.log(e);
         }
@@ -149,6 +152,33 @@ export default class StakeholderRegistry extends Component {
             );
             console.log('=== instanceTokenFactory ===', instanceTokenFactory);
 
+            //@dev - Create instance of ExpiringMultiPartyCreator.sol
+            let instanceExpiringMultiPartyCreator = null;
+            let EXPIRING_MULTIPARTY_CREATOR_ADDRESS = contractAddressList["Kovan"]["UMA"]["ExpiringMultiPartyCreator"];  //@dev - ExpiringMultiPartyCreator.sol from UMA
+            instanceExpiringMultiPartyCreator = new web3.eth.Contract(
+                ExpiringMultiPartyCreator.abi,
+                EXPIRING_MULTIPARTY_CREATOR_ADDRESS,
+            );
+            console.log('=== instanceExpiringMultiPartyCreator ===', instanceExpiringMultiPartyCreator);
+
+            //@dev - Create instance of IdentifierWhitelist.sol
+            let instanceIdentifierWhitelist = null;
+            let IDENTIFIER_WHITELIST_ADDRESS = contractAddressList["Kovan"]["UMA"]["IdentifierWhitelist"];  //@dev - IdentifierWhitelist.sol from UMA
+            instanceIdentifierWhitelist = new web3.eth.Contract(
+                IdentifierWhitelist.abi,
+                IDENTIFIER_WHITELIST_ADDRESS,
+            );
+            console.log('=== instanceIdentifierWhitelist ===', instanceIdentifierWhitelist);
+
+            //@dev - Create instance of Registry.sol
+            let instanceRegistry = null;
+            let REGISTRY_ADDRESS = contractAddressList["Kovan"]["UMA"]["Registry"];  //@dev - Registry.sol from UMA
+            instanceRegistry = new web3.eth.Contract(
+                Registry.abi,
+                REGISTRY_ADDRESS,
+            );
+            console.log('=== instanceRegistry ===', instanceRegistry);
+
 
             if (StakeholderRegistry) {
               // Set web3, accounts, and contract to the state, and then proceed with an
@@ -165,9 +195,15 @@ export default class StakeholderRegistry extends Component {
                 stakeholder_registry: instanceStakeholderRegistry,
                 dai: instanceDai,
                 token_factory: instanceTokenFactory,
+                expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
+                identifier_whitelist: instanceIdentifierWhitelist,
+                registry: instanceRegistry,
                 STAKEHOLDER_REGISTRY_ADDRESS: STAKEHOLDER_REGISTRY_ADDRESS,
                 DAI_ADDRESS: DAI_ADDRESS,
-                TOKEN_FACTORY_ADDRESS: TOKEN_FACTORY_ADDRESS
+                TOKEN_FACTORY_ADDRESS: TOKEN_FACTORY_ADDRESS,
+                EXPIRING_MULTIPARTY_CREATOR_ADDRESS: EXPIRING_MULTIPARTY_CREATOR_ADDRESS,
+                IDENTIFIER_WHITELIST_ADDRESS: IDENTIFIER_WHITELIST_ADDRESS,
+                REGISTRY_ADDRESS: REGISTRY_ADDRESS
               }, () => {
                 this.refreshValues(
                   instanceStakeholderRegistry

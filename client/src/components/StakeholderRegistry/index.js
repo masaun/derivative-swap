@@ -33,6 +33,118 @@ export default class StakeholderRegistry extends Component {
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
 
+    createNewToken = async () => {
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+
+        ////////////////////////////////////////////////
+        /// Parameterize and deploy a contract
+        ////////////////////////////////////////////////
+
+        //@dev - 4. Define the parameters for the synthetic tokens you would like to create.
+        const constructorParams = { expirationTimestamp: "1585699200", 
+                                    collateralAddress: TestnetERC20.address, 
+                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
+                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: '100000000000000' }, 
+                                    timerAddress: '0x0000000000000000000000000000000000000000' };
+
+        //@dev - 5. Before the contract for the synthetic tokens can be created, the price identifier for the synthetic tokens must be registered with IdentifierWhitelist.
+        const identifierWhitelist = await IdentifierWhitelist.deployed();
+        await identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
+
+        //@dev - 6. We also need to register the empCreator factory with the registry to give it permission to create new expiring multiparty (emp) synthetic tokens.
+        const registry = await Registry.deployed();
+        await registry.addMember(1, empCreator.address);
+
+        //@dev - 7. We also need to register the collateral token with the collateralTokenWhitelist.
+        collateralTokenWhitelist = await AddressWhitelist.at(await empCreator.collateralTokenWhitelist());
+        await collateralTokenWhitelist.addToWhitelist(TestnetERC20.address);
+
+        //@dev - 8. Now, we can create a new expiring multiparty synthetic token with the factory instance.
+        const txResult = await empCreator.createExpiringMultiParty(constructorParams);
+        const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
+
+
+        ////////////////////////////////////////////////
+        /// Create new tokens from an existing contract
+        ////////////////////////////////////////////////
+
+        //@dev - 1. we will create synthetic tokens from that contract.
+        const collateralToken = await TestnetERC20.deployed();
+        await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+        await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
+
+        //@dev - 2. We can now create a synthetic token position
+        await emp.create({ rawValue: web3.utils.toWei("150") }, { rawValue: web3.utils.toWei("100") });
+
+        //dev - 3. check that we now have synthetic tokens
+        const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
+          .toString()(
+            // collateral token balance
+            await syntheticToken.balanceOf(accounts[0])
+          )
+          .toString();
+        // synthetic token balance
+        await emp.positions(accounts[0]);
+        // position information
+    }
+
+    redeemToken = async () => {
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+        ////////////////////////////////////////////////
+        /// Redeem tokens against a contract
+        ////////////////////////////////////////////////
+
+        //@dev - 1. Token sponsor can redeem some of the tokens we minted even before the synthetic token expires
+        await syntheticToken.approve(emp.address, web3.utils.toWei("10000"));
+        await emp.redeem({ rawValue: web3.utils.toWei("50") });
+
+        //@dev - 2. check that our synthetic token balance
+        (await collateralToken.balanceOf(accounts[0]))
+          .toString()(
+            // collateral token balance
+            await syntheticToken.balanceOf(accounts[0])
+          )
+          .toString();
+        // synthetic token balance
+        await emp.positions(accounts[0]);
+        // position information
+    }
+
+    withdrawToken = async () => {
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+        ////////////////////////////////////////////////
+        /// Deposit and withdraw collateral
+        ////////////////////////////////////////////////
+
+        //@dev - 1. Deposit 10 additional collateral tokens
+        await emp
+            .deposit({ rawValue: web3.utils.toWei("10") })(await collateralToken.balanceOf(accounts[0]))
+            .toString();
+
+        //@dev - 2. Deposit 10 additional collateral tokens
+        await emp.requestWithdrawal({ rawValue: web3.utils.toWei("10") });
+
+        //@dev - 3. Simulate the withdrawal liveness period passing without a dispute of our withdrawal request
+        await emp.setCurrentTime((await emp.getCurrentTime()).toNumber() + 1001);
+        await emp.withdrawPassedRequest();
+
+        //@dev - 4. check that our collateral token balance has returned to 9,925.
+        (await collateralToken.balanceOf(accounts[0])).toString();
+        // collateral token balance
+    }
+
+
+
+
+
+
+
+
     createToken = async () => {
         const { accounts, web3, dai, stakeholder_registry, token_factory } = this.state;
 
@@ -53,6 +165,11 @@ export default class StakeholderRegistry extends Component {
         let res1 = await stakeholder_registry.methods.balanceOfContract().call();
         console.log('=== response of balanceOfContract() function ===\n', res1);
     }
+
+
+
+
+
 
 
 

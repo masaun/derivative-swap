@@ -1,7 +1,6 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
@@ -16,6 +15,9 @@ import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
 import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
+import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+import "./uma/contracts/oracle/implementation/Registry.sol";
 
 
 /***
@@ -28,15 +30,20 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     address DAI_ADDRESS;
     IERC20 public dai;
     TokenFactory public tokenFactory;
+    ExpiringMultiPartyCreator public expiringMultiPartyCreator;
+    IdentifierWhitelist public identifierWhitelist;
+    Registry public registry;
 
-    constructor(address _erc20, address _tokenFactory) public {
+
+    constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
 
         tokenFactory = TokenFactory(_tokenFactory);
+        expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
+        identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
+        registry = Registry(_registry);
     }
-
-
 
     function _createToken(
         string memory _tokenName,

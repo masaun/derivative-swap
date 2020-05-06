@@ -8,6 +8,10 @@ var walletAddressList = require('./walletAddress/walletAddress.js');
 
 const _erc20 = tokenAddressList["Kovan"]["DAI"];                            // DAI address on Kovan
 const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];  // TokenFactory.sol from UMA
+const _expiringMultiPartyCreator = contractAddressList["Kovan"]["UMA"]["ExpiringMultiPartyCreator"];  // ExpiringMultiPartyCreator.sol from UMA
+const _identifierWhitelist = contractAddressList["Kovan"]["UMA"]["IdentifierWhitelist"];  // IdentifierWhitelist.sol from UMA
+const _registry = contractAddressList["Kovan"]["UMA"]["Registry"];  // Registry.sol from UMA
+
 
 const depositedAmount = web3.utils.toWei("2.1");    // 2.1 DAI which is deposited in deployed contract. 
 
@@ -16,7 +20,12 @@ module.exports = async function(deployer, network, accounts) {
     // Initialize owner address if you want to transfer ownership of contract to some other address
     let ownerAddress = walletAddressList["WalletAddress1"];
 
-    await deployer.deploy(StakeholderRegistry, _erc20, _tokenFactory).then(async function(stakeholderRegistry) {
+    await deployer.deploy(StakeholderRegistry, 
+                          _erc20, 
+                          _tokenFactory, 
+                          _expiringMultiPartyCreator, 
+                          _identifierWhitelist, 
+                          _registry).then(async function(stakeholderRegistry) {
         if(ownerAddress && ownerAddress!="") {
             console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
             await stakeholderRegistry.transferOwnership(ownerAddress);

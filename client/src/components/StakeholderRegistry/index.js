@@ -53,7 +53,7 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: '100000000000000' }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams);
+        const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult ===', txResult);
         //const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
     }

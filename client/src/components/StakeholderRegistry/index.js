@@ -34,52 +34,19 @@ export default class StakeholderRegistry extends Component {
     }
 
     createNewToken = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
-
-        ////////////////////////////////////////////////
-        /// Parameterize and deploy a contract
-        ////////////////////////////////////////////////
-
-        //@dev - 4. Define the parameters for the synthetic tokens you would like to create.
-        const constructorParams = { expirationTimestamp: "1585699200", 
-                                    collateralAddress: TestnetERC20.address, 
-                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
-                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
-                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    minSponsorTokens: { rawValue: '100000000000000' }, 
-                                    timerAddress: '0x0000000000000000000000000000000000000000' };
-
-        //@dev - 5. Before the contract for the synthetic tokens can be created, the price identifier for the synthetic tokens must be registered with IdentifierWhitelist.
-        const identifierWhitelist = await IdentifierWhitelist.deployed();
-        await identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-
-        //@dev - 6. We also need to register the empCreator factory with the registry to give it permission to create new expiring multiparty (emp) synthetic tokens.
-        const registry = await Registry.deployed();
-        await registry.addMember(1, empCreator.address);
-
-        //@dev - 7. We also need to register the collateral token with the collateralTokenWhitelist.
-        collateralTokenWhitelist = await AddressWhitelist.at(await empCreator.collateralTokenWhitelist());
-        await collateralTokenWhitelist.addToWhitelist(TestnetERC20.address);
-
-        //@dev - 8. Now, we can create a new expiring multiparty synthetic token with the factory instance.
-        const txResult = await empCreator.createExpiringMultiParty(constructorParams);
-        const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
-
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
         ////////////////////////////////////////////////
 
         //@dev - 1. we will create synthetic tokens from that contract.
-        const collateralToken = await TestnetERC20.deployed();
+        const collateralToken = await dai;
         await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
         await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
 
         //@dev - 2. We can now create a synthetic token position
-        await emp.create({ rawValue: web3.utils.toWei("150") }, { rawValue: web3.utils.toWei("100") });
+        await emp.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") });
 
         //dev - 3. check that we now have synthetic tokens
         const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
@@ -208,7 +175,8 @@ export default class StakeholderRegistry extends Component {
           TokenFactory = require("../../../../build/contracts/TokenFactory.json");  //@dev - TokenFactory.sol
           ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
           IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
-          Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol        
+          Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol  
+
         } catch (e) {
           console.log(e);
         }
@@ -296,6 +264,15 @@ export default class StakeholderRegistry extends Component {
             );
             console.log('=== instanceRegistry ===', instanceRegistry);
 
+            //@dev - Create instance of AddressWhitelist.sol
+            let instanceAddressWhitelist = null;
+            let ADDRESS_WHITELIST_ADDRESS = contractAddressList["Kovan"]["UMA"]["Registry"];  //@dev - Registry.sol from UMA
+            instanceAddressWhitelist = new web3.eth.Contract(
+                AddressWhitelist.abi,
+                ADDRESS_WHITELIST_ADDRESS,
+            );
+            console.log('=== instanceAddressWhitelist ===', instanceAddressWhitelist);
+
 
             if (StakeholderRegistry) {
               // Set web3, accounts, and contract to the state, and then proceed with an
@@ -315,12 +292,14 @@ export default class StakeholderRegistry extends Component {
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
                 identifier_whitelist: instanceIdentifierWhitelist,
                 registry: instanceRegistry,
+                address_whitelist: instanceAddressWhitelist,
                 STAKEHOLDER_REGISTRY_ADDRESS: STAKEHOLDER_REGISTRY_ADDRESS,
                 DAI_ADDRESS: DAI_ADDRESS,
                 TOKEN_FACTORY_ADDRESS: TOKEN_FACTORY_ADDRESS,
                 EXPIRING_MULTIPARTY_CREATOR_ADDRESS: EXPIRING_MULTIPARTY_CREATOR_ADDRESS,
                 IDENTIFIER_WHITELIST_ADDRESS: IDENTIFIER_WHITELIST_ADDRESS,
-                REGISTRY_ADDRESS: REGISTRY_ADDRESS
+                REGISTRY_ADDRESS: REGISTRY_ADDRESS,
+                ADDRESS_WHITELIST_ADDRESS: ADDRESS_WHITELIST_ADDRESS
               }, () => {
                 this.refreshValues(
                   instanceStakeholderRegistry

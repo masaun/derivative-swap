@@ -29,6 +29,8 @@ export default class StakeholderRegistry extends Component {
             route: window.location.pathname.replace("/", "")
         };
 
+        this._createExpiringMultiParty = this._createExpiringMultiParty.bind(this); 
+
         this.createToken = this.createToken.bind(this);
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
@@ -51,7 +53,7 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: '100000000000000' }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const txResult = await expiring_multiparty_creator.createExpiringMultiParty(constructorParams);
+        const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams);
         console.log('=== txResult ===', txResult);
         //const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
     }

@@ -33,77 +33,103 @@ export default class StakeholderRegistry extends Component {
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
 
-    createNewToken = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
-        ////////////////////////////////////////////////
-        /// Create new tokens from an existing contract
-        ////////////////////////////////////////////////
-
-        //@dev - 1. we will create synthetic tokens from that contract.
-        const collateralToken = await dai;
-        await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-        await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
-
-        //@dev - 2. We can now create a synthetic token position
-        await emp.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") });
-
-        //dev - 3. check that we now have synthetic tokens
-        const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
-          .toString()(
-            // collateral token balance
-            await syntheticToken.balanceOf(accounts[0])
-          )
-          .toString();
-        // synthetic token balance
-        await emp.positions(accounts[0]);
-        // position information
-    }
-
-    redeemToken = async () => {
+    _createExpiringMultiParty = async () => {
         const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
-        ////////////////////////////////////////////////
-        /// Redeem tokens against a contract
-        ////////////////////////////////////////////////
 
-        //@dev - 1. Token sponsor can redeem some of the tokens we minted even before the synthetic token expires
-        await syntheticToken.approve(emp.address, web3.utils.toWei("10000"));
-        await emp.redeem({ rawValue: web3.utils.toWei("50") });
+        ////////////////////////////////////////////////
+        /// Parameterize and deploy a contract
+        ////////////////////////////////////////////////
+        const constructorParams = { expirationTimestamp: "1585699200", 
+                                    collateralAddress: dai.address, 
+                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("0.15") }, 
+                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: '100000000000000' }, 
+                                    timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        //@dev - 2. check that our synthetic token balance
-        (await collateralToken.balanceOf(accounts[0]))
-          .toString()(
-            // collateral token balance
-            await syntheticToken.balanceOf(accounts[0])
-          )
-          .toString();
-        // synthetic token balance
-        await emp.positions(accounts[0]);
-        // position information
+        const txResult = await expiring_multiparty_creator.createExpiringMultiParty(constructorParams);
+        console.log('=== txResult ===', txResult);
+        //const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
     }
 
-    withdrawToken = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
-        ////////////////////////////////////////////////
-        /// Deposit and withdraw collateral
-        ////////////////////////////////////////////////
 
-        //@dev - 1. Deposit 10 additional collateral tokens
-        await emp
-            .deposit({ rawValue: web3.utils.toWei("10") })(await collateralToken.balanceOf(accounts[0]))
-            .toString();
 
-        //@dev - 2. Deposit 10 additional collateral tokens
-        await emp.requestWithdrawal({ rawValue: web3.utils.toWei("10") });
 
-        //@dev - 3. Simulate the withdrawal liveness period passing without a dispute of our withdrawal request
-        await emp.setCurrentTime((await emp.getCurrentTime()).toNumber() + 1001);
-        await emp.withdrawPassedRequest();
+    // createNewToken = async () => {
+    //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
-        //@dev - 4. check that our collateral token balance has returned to 9,925.
-        (await collateralToken.balanceOf(accounts[0])).toString();
-        // collateral token balance
-    }
+    //     ////////////////////////////////////////////////
+    //     /// Create new tokens from an existing contract
+    //     ////////////////////////////////////////////////
+
+    //     //@dev - 1. we will create synthetic tokens from that contract.
+    //     const collateralToken = await dai;
+    //     await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+    //     await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
+
+    //     //@dev - 2. We can now create a synthetic token position
+    //     await emp.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") });
+
+    //     //dev - 3. check that we now have synthetic tokens
+    //     const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
+    //       .toString()(
+    //         // collateral token balance
+    //         await syntheticToken.balanceOf(accounts[0])
+    //       )
+    //       .toString();
+    //     // synthetic token balance
+    //     await emp.positions(accounts[0]);
+    //     // position information
+    // }
+
+    // redeemToken = async () => {
+    //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+    //     ////////////////////////////////////////////////
+    //     /// Redeem tokens against a contract
+    //     ////////////////////////////////////////////////
+
+    //     //@dev - 1. Token sponsor can redeem some of the tokens we minted even before the synthetic token expires
+    //     await syntheticToken.approve(emp.address, web3.utils.toWei("10000"));
+    //     await emp.redeem({ rawValue: web3.utils.toWei("50") });
+
+    //     //@dev - 2. check that our synthetic token balance
+    //     (await collateralToken.balanceOf(accounts[0]))
+    //       .toString()(
+    //         // collateral token balance
+    //         await syntheticToken.balanceOf(accounts[0])
+    //       )
+    //       .toString();
+    //     // synthetic token balance
+    //     await emp.positions(accounts[0]);
+    //     // position information
+    // }
+
+    // withdrawToken = async () => {
+    //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+    //     ////////////////////////////////////////////////
+    //     /// Deposit and withdraw collateral
+    //     ////////////////////////////////////////////////
+
+    //     //@dev - 1. Deposit 10 additional collateral tokens
+    //     await emp
+    //         .deposit({ rawValue: web3.utils.toWei("10") })(await collateralToken.balanceOf(accounts[0]))
+    //         .toString();
+
+    //     //@dev - 2. Deposit 10 additional collateral tokens
+    //     await emp.requestWithdrawal({ rawValue: web3.utils.toWei("10") });
+
+    //     //@dev - 3. Simulate the withdrawal liveness period passing without a dispute of our withdrawal request
+    //     await emp.setCurrentTime((await emp.getCurrentTime()).toNumber() + 1001);
+    //     await emp.withdrawPassedRequest();
+
+    //     //@dev - 4. check that our collateral token balance has returned to 9,925.
+    //     (await collateralToken.balanceOf(accounts[0])).toString();
+    //     // collateral token balance
+    // }
 
 
 
@@ -169,14 +195,20 @@ export default class StakeholderRegistry extends Component {
         let StakeholderRegistry = {};
         let Dai = {};
         let TokenFactory = {};
+        let ExpiringMultiParty = {};
+        let ExpiringMultiPartyCreator = {};
+        let IdentifierWhitelist = {};
+        let Registry = {};
+        let AddressWhitelist = {};
         try {
           StakeholderRegistry = require("../../../../build/contracts/StakeholderRegistry.json");  // Load artifact-file of StakeholderRegistry
           Dai = require("../../../../build/contracts/IERC20.json");    //@dev - DAI
           TokenFactory = require("../../../../build/contracts/TokenFactory.json");  //@dev - TokenFactory.sol
+          ExpiringMultiParty = require("../../../../build/contracts/ExpiringMultiParty.json");  //@dev - ExpiringMultiParty.sol
           ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
           IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
           Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol  
-
+          AddressWhitelist = require("../../../../build/contracts/AddressWhitelist.json");  //@dev - AddressWhitelist.sol  
         } catch (e) {
           console.log(e);
         }
@@ -266,7 +298,7 @@ export default class StakeholderRegistry extends Component {
 
             //@dev - Create instance of AddressWhitelist.sol
             let instanceAddressWhitelist = null;
-            let ADDRESS_WHITELIST_ADDRESS = contractAddressList["Kovan"]["UMA"]["Registry"];  //@dev - Registry.sol from UMA
+            let ADDRESS_WHITELIST_ADDRESS = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];  //@dev - AddressWhitelist.sol from UMA
             instanceAddressWhitelist = new web3.eth.Contract(
                 AddressWhitelist.abi,
                 ADDRESS_WHITELIST_ADDRESS,
@@ -338,6 +370,10 @@ export default class StakeholderRegistry extends Component {
                               borderColor={"#E8E8E8"}
                         >
                             <h4>UMA Synthetic Tokens HackMoney</h4> <br />
+
+                            <Button size={'small'} mt={3} mb={2} onClick={this._createExpiringMultiParty}> Create Expiring MultiParty </Button> <br />
+
+                            <hr />                            
 
                             <Button size={'small'} mt={3} mb={2} onClick={this.createToken}> Create Synthetic Token </Button> <br />
 

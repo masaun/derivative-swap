@@ -37,13 +37,13 @@ export default class StakeholderRegistry extends Component {
 
 
     _createExpiringMultiParty = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
 
         ////////////////////////////////////////////////
         /// Parameterize and deploy a contract
         ////////////////////////////////////////////////
         const constructorParams = { expirationTimestamp: "1585699200", 
-                                    collateralAddress: dai.address, 
+                                    collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
                                     collateralRequirement: { rawValue: web3.utils.toWei("0.15") }, 

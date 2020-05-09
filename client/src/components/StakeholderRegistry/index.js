@@ -43,15 +43,9 @@ export default class StakeholderRegistry extends Component {
         /// Parameterize and deploy a contract
         ////////////////////////////////////////////////
 
-        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
-        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
-        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
-
         let tokenFactoryAddress = await expiring_multiparty_creator.methods.tokenFactoryAddress().call();
         console.log('=== tokenFactoryAddress ===', tokenFactoryAddress);        
         // Log: === tokenFactoryAddress === 0x478049C316035a3Cf0e1d73fdeD5BC45D1CeFde4
-
-
 
         // Whitelist collateral currency
         //await collateralTokenWhitelist.addToWhitelist(collateralToken.address, { from: contractCreator });
@@ -67,6 +61,15 @@ export default class StakeholderRegistry extends Component {
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
+
+        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
+        await registry.methods.addMember(1, expiring_multiparty_creator.address).send({ from: accounts[0] });
+
+        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
+        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
+        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
+
+        await collateralTokenWhitelist.methods.addToWhitelist(dai.address).send({ from: accounts[0] });
 
         const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult ===', txResult);

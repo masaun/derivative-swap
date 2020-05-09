@@ -37,20 +37,31 @@ export default class StakeholderRegistry extends Component {
 
 
     _createExpiringMultiParty = async () => {
-        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
         ////////////////////////////////////////////////
         /// Parameterize and deploy a contract
         ////////////////////////////////////////////////
+
+        // Contract variables
+        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
+        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
+        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
+
+
+
+        // Whitelist collateral currency
+        //await collateralTokenWhitelist.addToWhitelist(collateralToken.address, { from: contractCreator });
+
         const constructorParams = { expirationTimestamp: "1585699200", 
                                     collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("0.15") }, 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
                                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    minSponsorTokens: { rawValue: '100000000000000' }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
         const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });

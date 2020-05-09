@@ -43,10 +43,13 @@ export default class StakeholderRegistry extends Component {
         /// Parameterize and deploy a contract
         ////////////////////////////////////////////////
 
-        // Contract variables
         let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
         console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
         // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
+
+        let tokenFactoryAddress = await expiring_multiparty_creator.methods.tokenFactoryAddress().call();
+        console.log('=== tokenFactoryAddress ===', tokenFactoryAddress);        
+        // Log: === tokenFactoryAddress === 0x478049C316035a3Cf0e1d73fdeD5BC45D1CeFde4
 
 
 

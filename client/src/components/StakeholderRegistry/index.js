@@ -56,7 +56,8 @@ export default class StakeholderRegistry extends Component {
         // Whitelist collateral currency
         //await collateralTokenWhitelist.addToWhitelist(collateralToken.address, { from: contractCreator });
 
-        const constructorParams = { expirationTimestamp: "1585699200", 
+        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
                                     collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 

@@ -30,6 +30,7 @@ export default class StakeholderRegistry extends Component {
         };
 
         this._createExpiringMultiParty = this._createExpiringMultiParty.bind(this); 
+        this.createNewToken = this.createNewToken.bind(this);
 
         this.createToken = this.createToken.bind(this);
         this._balanceOfContract = this._balanceOfContract.bind(this);
@@ -77,34 +78,32 @@ export default class StakeholderRegistry extends Component {
     }
 
 
+    createNewToken = async () => {
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
 
+        ////////////////////////////////////////////////
+        /// Create new tokens from an existing contract
+        ////////////////////////////////////////////////
 
-    // createNewToken = async () => {
-    //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
+        //@dev - 1. we will create synthetic tokens from that contract.
+        const collateralToken = await dai;
+        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+        await collateralToken.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
 
-    //     ////////////////////////////////////////////////
-    //     /// Create new tokens from an existing contract
-    //     ////////////////////////////////////////////////
+        //@dev - 2. We can now create a synthetic token position
+        await expiring_multiparty_creator.methods.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") }).send({ from: accounts[0] });
 
-    //     //@dev - 1. we will create synthetic tokens from that contract.
-    //     const collateralToken = await dai;
-    //     await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-    //     await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
+        //dev - 3. check that we now have synthetic tokens
+       
+        // collateral token balance
 
-    //     //@dev - 2. We can now create a synthetic token position
-    //     await emp.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") });
+        // synthetic token balance
+        //let res = await syntheticToken.methods.balanceOf(accounts[0]).call();
+        //console.log('=== balance of syntheticToken ===', res);
 
-    //     //dev - 3. check that we now have synthetic tokens
-    //     const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
-    //       .toString()(
-    //         // collateral token balance
-    //         await syntheticToken.balanceOf(accounts[0])
-    //       )
-    //       .toString();
-    //     // synthetic token balance
-    //     await emp.positions(accounts[0]);
-    //     // position information
-    // }
+        // position information
+        await expiring_multiparty_creator.methods.positions(accounts[0]).send({ from: accounts[0] });
+    }
 
     // redeemToken = async () => {
     //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
@@ -392,6 +391,8 @@ export default class StakeholderRegistry extends Component {
                             <h4>UMA Synthetic Tokens HackMoney</h4> <br />
 
                             <Button size={'small'} mt={3} mb={2} onClick={this._createExpiringMultiParty}> Create Expiring MultiParty </Button> <br />
+
+                            <Button size={'small'} mt={3} mb={2} onClick={this.createNewToken}> Create New Token </Button> <br />
 
                             <hr />                            
 

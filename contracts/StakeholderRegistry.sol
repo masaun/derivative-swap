@@ -18,6 +18,8 @@ import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  /
 import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
+import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+
 
 
 /***
@@ -28,11 +30,13 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     //@dev - Token Address
     address DAI_ADDRESS;
+    address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
     IERC20 public dai;
     TokenFactory public tokenFactory;
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
     IdentifierWhitelist public identifierWhitelist;
     Registry public registry;
+    AddressWhitelist public addressWhitelist;
 
 
     constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry) public {
@@ -47,15 +51,21 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     }
 
 
-    function createSyntheticTokenPosition(uint _rawValue) public returns (bool) {
+    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
+        identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
+
         //@dev - 1. we will create synthetic tokens from that contract.
         IERC20 collateralToken = dai;
-        
-        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-        collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, _rawValue);
+        address collateralTokenAddress = DAI_ADDRESS;
 
-        //@dev - 2. We can now create a synthetic token position
-        expiringMultiPartyCreator.create(_rawValue, _rawValue);
+        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+        collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, 150000000000000000);  // 0.15 Ether
+
+        addressWhitelist.addToWhitelist(collateralTokenAddress);
+
+        // @dev - 2. We can now create a synthetic token position
+        expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
     }
     
 

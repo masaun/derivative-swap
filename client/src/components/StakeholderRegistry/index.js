@@ -53,7 +53,7 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const txResult = await expiring_multiparty_creator.methods.createSyntheticTokenPosition(constructorParams).send({ from: accounts[0] });
+        const txResult = await stakeholder_registry.methods.createSyntheticTokenPosition(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult of createSyntheticTokenPosition() ===', txResult);        
     }
 

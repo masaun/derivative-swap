@@ -38,12 +38,27 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
+        EXPIRING_MULTIPARTY_CREATOR_ADDRESS = _expiringMultiPartyCreator;
 
         tokenFactory = TokenFactory(_tokenFactory);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
         identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
         registry = Registry(_registry);
     }
+
+
+    function createSyntheticTokenPosition(uint _rawValue) public returns (bool) {
+        //@dev - 1. we will create synthetic tokens from that contract.
+        IERC20 collateralToken = dai;
+        
+        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+        collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, _rawValue);
+
+        //@dev - 2. We can now create a synthetic token position
+        expiringMultiPartyCreator.create(_rawValue, _rawValue);
+    }
+    
+
 
     function _createToken(
         string memory _tokenName,

@@ -70,7 +70,7 @@ export default class StakeholderRegistry extends Component {
         console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
         // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
 
-        await collateralTokenWhitelist.methods.addToWhitelist(dai.address).send({ from: accounts[0] });
+        await address_whitelist.methods.addToWhitelist(collateralTokenWhitelist).send({ from: accounts[0] });
 
         const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult ===', txResult);
@@ -79,7 +79,24 @@ export default class StakeholderRegistry extends Component {
 
 
     createNewToken = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+
+        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
+                                    collateralAddress: DAI_ADDRESS, 
+                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
+                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
+                                    timerAddress: '0x0000000000000000000000000000000000000000' }
+
+        await address_whitelist.methods.addToWhitelist(constructorParams.collateralAddress).send({ from: accounts[0] });
+        let addressWhitelist = address_whitelist.methods.getWhitelist().call();
+        console.log('=== addressWhitelist ===', addressWhitelist);
+
 
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
@@ -91,7 +108,7 @@ export default class StakeholderRegistry extends Component {
         await collateralToken.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
 
         //@dev - 2. We can now create a synthetic token position
-        await expiring_multiparty_creator.methods.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") }).send({ from: accounts[0] });
+        await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
 
         //dev - 3. check that we now have synthetic tokens
        

@@ -52,17 +52,12 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
-        identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
-
         //@dev - 1. we will create synthetic tokens from that contract.
         IERC20 collateralToken = dai;
         address collateralTokenAddress = DAI_ADDRESS;
 
         //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
         collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, 150000000000000000);  // 0.15 Ether
-
-        addressWhitelist.addToWhitelist(collateralTokenAddress);
 
         // @dev - 2. We can now create a synthetic token position
         expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);

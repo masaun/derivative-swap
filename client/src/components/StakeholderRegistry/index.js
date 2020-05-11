@@ -102,23 +102,6 @@ export default class StakeholderRegistry extends Component {
     createNewToken = async () => {
         const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
 
-        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
-                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
-                                    collateralAddress: DAI_ADDRESS, 
-                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
-                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: web3.utils.toWei("1.5"), 
-                                    disputeBondPct: web3.utils.toWei("0.1"), 
-                                    sponsorDisputeRewardPct: web3.utils.toWei("0.1"), 
-                                    disputerDisputeRewardPct: web3.utils.toWei("0.1"), 
-                                    minSponsorTokens: web3.utils.toWei("0.1"), 
-                                    timerAddress: '0x0000000000000000000000000000000000000000' }
-
-        await address_whitelist.methods.addToWhitelist(constructorParams.collateralAddress).send({ from: accounts[0] });
-        let addressWhitelist = address_whitelist.methods.getWhitelist().call();
-        console.log('=== addressWhitelist ===', addressWhitelist);
-
-
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
         ////////////////////////////////////////////////
@@ -126,10 +109,12 @@ export default class StakeholderRegistry extends Component {
         //@dev - 1. we will create synthetic tokens from that contract.
         const collateralToken = await dai;
         //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-        await collateralToken.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
+        let res = await collateralToken.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
+        console.log('=== approve() ===', res);
+
 
         //@dev - 2. We can now create a synthetic token position
-        await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
+        await expiring_multiparty_creator.methods.create({ rawValue: web3.utils.toWei("150") }, { rawValue: web3.utils.toWei("100") }).send({ from: accounts[0] });
 
         //dev - 3. check that we now have synthetic tokens
        

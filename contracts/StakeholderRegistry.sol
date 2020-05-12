@@ -16,8 +16,10 @@ import "./storage/McConstants.sol";
 // SyntheticToken from UMA
 import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
 import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
+import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
+import "./uma/contracts/oracle/implementation/Finder.sol";
 import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 
 
@@ -39,6 +41,8 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     IdentifierWhitelist public identifierWhitelist;
     Registry public registry;
     AddressWhitelist public addressWhitelist;
+    Finder public finder;
+    Timer public timer;
 
 
     constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
@@ -67,7 +71,13 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     }
 
 
-    function createContractViaNew(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (IdentifierWhitelist identifierWhitelist, address EXPIRING_MULTIPARTY_ADDRESS) {
+    function createContractViaNew(ExpiringMultiPartyCreator.Params memory constructorParams) 
+        public 
+        returns (IdentifierWhitelist identifierWhitelist, 
+                 Registry registry, 
+                 AddressWhitelist addressWhitelist, 
+                 address EXPIRING_MULTIPARTY_ADDRESS) 
+    {
         IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
 
@@ -76,10 +86,23 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
         AddressWhitelist addressWhitelist = new AddressWhitelist();
         addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
+        address _collateralTokenWhitelist = address(addressWhitelist);
 
-        address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+        Finder finder = new Finder();
+        address _finderAddress = address(finder);
 
-        return (identifierWhitelist, EXPIRING_MULTIPARTY_ADDRESS);
+        TokenFactory tokenFactory = new TokenFactory();
+        address _tokenFactoryAddress = address(tokenFactory);
+
+        Timer timer = new Timer();
+        address _timerAddress = address(timer);
+
+        ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
+
+        address EXPIRING_MULTIPARTY_ADDRESS;
+        // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+
+        return (identifierWhitelist, registry, addressWhitelist, EXPIRING_MULTIPARTY_ADDRESS);
     }
     
 

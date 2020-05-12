@@ -14,7 +14,7 @@ const _registry = contractAddressList["Kovan"]["UMA"]["Registry"];  // Registry.
 const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 
 
-const depositedAmount = web3.utils.toWei("2.1");    // 2.1 DAI which is deposited in deployed contract. 
+const depositedAmount = web3.utils.toWei("0.1");    // 2.1 DAI which is deposited in deployed contract. 
 
 
 module.exports = async function(deployer, network, accounts) {

@@ -39,7 +39,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     AddressWhitelist public addressWhitelist;
 
 
-    constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry) public {
+    constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
         EXPIRING_MULTIPARTY_CREATOR_ADDRESS = _expiringMultiPartyCreator;
@@ -48,6 +48,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
         identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
         registry = Registry(_registry);
+        addressWhitelist = AddressWhitelist(_addressWhitelist);
     }
 
 
@@ -66,6 +67,14 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     function createContractViaNew() public returns (IdentifierWhitelist identifierWhitelist) {
         IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
+
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
+
+        address collateralTokenWhitelist = expiringMultiPartyCreator.collateralTokenWhitelist();
+        address_whitelist.addToWhitelist(collateralTokenWhitelist);
+
+        expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+
         return identifierWhitelist;
     }
     

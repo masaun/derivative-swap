@@ -94,9 +94,8 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        //await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
-        //await registry.methods.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS).send({ from: accounts[0] });
-
+        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
+        await registry.methods.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS).send({ from: accounts[0] });
         await address_whitelist.methods.addToWhitelist(collateralTokenWhitelist).send({ from: accounts[0] });
 
         const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });

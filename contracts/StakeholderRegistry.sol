@@ -59,50 +59,42 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
-        //@dev - 1. we will create synthetic tokens from that contract.
-        IERC20 collateralToken = dai;
-        address collateralTokenAddress = DAI_ADDRESS;
+        //@dev - Call from createContractViaNew() method
+        (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer) = createContractViaNew();
 
-        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-        collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, 150000000000000000);  // 0.15 Ether
-
-        // @dev - 2. We can now create a synthetic token position
-        //expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
-    }
-
-
-    function createContractViaNew(ExpiringMultiPartyCreator.Params memory constructorParams) 
-        public 
-        returns (IdentifierWhitelist identifierWhitelist, 
-                 Registry registry, 
-                 AddressWhitelist addressWhitelist, 
-                 address EXPIRING_MULTIPARTY_ADDRESS) 
-    {
-        IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
+        //@dev - Create ExpiringMultiParty
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-
-        Registry registry = new Registry();
         registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
-
-        AddressWhitelist addressWhitelist = new AddressWhitelist();
         addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
+
         address _collateralTokenWhitelist = address(addressWhitelist);
-
-        Finder finder = new Finder();
         address _finderAddress = address(finder);
-
-        TokenFactory tokenFactory = new TokenFactory();
         address _tokenFactoryAddress = address(tokenFactory);
-
-        Timer timer = new Timer();
         address _timerAddress = address(timer);
 
         ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
         address EXPIRING_MULTIPARTY_ADDRESS;
         // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+    }
 
-        return (identifierWhitelist, registry, addressWhitelist, EXPIRING_MULTIPARTY_ADDRESS);
+    function createContractViaNew() 
+        public 
+        returns (IdentifierWhitelist identifierWhitelist, 
+                 Registry registry, 
+                 AddressWhitelist addressWhitelist, 
+                 Finder finder,
+                 TokenFactory tokenFactory,
+                 Timer timer) 
+    {
+        IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
+        Registry registry = new Registry();
+        AddressWhitelist addressWhitelist = new AddressWhitelist();
+        Finder finder = new Finder();
+        TokenFactory tokenFactory = new TokenFactory();
+        Timer timer = new Timer();
+
+        return (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer);
     }
     
 

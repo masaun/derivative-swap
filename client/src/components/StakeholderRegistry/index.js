@@ -29,62 +29,129 @@ export default class StakeholderRegistry extends Component {
             route: window.location.pathname.replace("/", "")
         };
 
+        this._createSyntheticTokenPosition = this._createSyntheticTokenPosition.bind(this);
+        this._createExpiringMultiParty = this._createExpiringMultiParty.bind(this); 
+        this.createNewToken = this.createNewToken.bind(this);
+
         this.createToken = this.createToken.bind(this);
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
 
 
+    _createSyntheticTokenPosition = async () => {
+        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
+
+        // const res = await stakeholder_registry.methods.createContractViaNew().send({ from: accounts[0] });
+        // console.log('=== res of createContractViaNew() ===', res);
+
+        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
+                                    collateralAddress: DAI_ADDRESS, 
+                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("0.015") }, 
+                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
+                                    timerAddress: '0x0000000000000000000000000000000000000000' }
+
+        const res = await stakeholder_registry.methods.createContractViaNew(constructorParams).send({ from: accounts[0] });
+        console.log('=== res of createContractViaNew() ===', res);
+
+        const txResult = await stakeholder_registry.methods.createSyntheticTokenPosition(constructorParams).send({ from: accounts[0] });
+        console.log('=== txResult of createSyntheticTokenPosition() ===', txResult);        
+    }
+
+
     _createExpiringMultiParty = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+
+        const FinancialContractsAdmin = contractAddressList["Kovan"]["UMA"]["FinancialContractsAdmin"];
+
+        const deployer = (await web3.eth.getAccounts())[0];
+        console.log('=== deployer ===', deployer);  
 
         ////////////////////////////////////////////////
         /// Parameterize and deploy a contract
         ////////////////////////////////////////////////
-        const constructorParams = { expirationTimestamp: "1585699200", 
-                                    collateralAddress: dai.address, 
+
+        let tokenFactoryAddress = await expiring_multiparty_creator.methods.tokenFactoryAddress().call();
+        console.log('=== tokenFactoryAddress ===', tokenFactoryAddress);        
+        // Log: === tokenFactoryAddress === 0x478049C316035a3Cf0e1d73fdeD5BC45D1CeFde4
+
+        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
+        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
+        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b   
+
+
+        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
+                                    collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("0.15") }, 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
                                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    minSponsorTokens: { rawValue: '100000000000000' }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const txResult = await expiring_multiparty_creator.createExpiringMultiParty(constructorParams);
+        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
+        await registry.methods.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS).send({ from: accounts[0] });
+        await address_whitelist.methods.addToWhitelist(collateralTokenWhitelist).send({ from: accounts[0] });
+
+        const txResult = await expiring_multiparty_creator.methods.createExpiringMultiParty(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult ===', txResult);
         //const emp = await ExpiringMultiParty.at(txResult.logs[0].args.expiringMultiPartyAddress);
     }
 
 
+    createNewToken = async () => {
+        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+
+        ////////////////////////////////////////////////
+        /// Create new tokens from an existing contract
+        ////////////////////////////////////////////////
+
+        //@dev - 1. we will create synthetic tokens from that contract.
+        const collateral_token = await dai;
+        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
+        let res = await collateral_token.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
+        console.log('=== approve() ===', res);
 
 
-    // createNewToken = async () => {
-    //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
+        //@dev - 2. We can now create a synthetic token position
+        //await expiring_multiparty_creator.methods.create({ rawValue: web3.utils.toWei("150") }, { rawValue: web3.utils.toWei("100") }).send({ from: accounts[0] });
 
-    //     ////////////////////////////////////////////////
-    //     /// Create new tokens from an existing contract
-    //     ////////////////////////////////////////////////
+        //dev - 3. check that we now have synthetic tokens
+        let SyntheticToken = {};
+        SyntheticToken = require("../../../../build/contracts/SyntheticToken.json");  //@dev - SyntheticToken.sol
+        let instanceSyntheticToken = null;
+        let SYNTHETIC_TOKEN_ADDRESS = tokenAddressList["Kovan"]["UMA BTC Dominance July 2020"];
+        instanceSyntheticToken = new web3.eth.Contract(
+            SyntheticToken.abi,
+            SYNTHETIC_TOKEN_ADDRESS,
+        );
+        this.setState({ synthetic_token: instanceSyntheticToken, 
+                        SYNTHETIC_TOKEN_ADDRESS: SYNTHETIC_TOKEN_ADDRESS });
+        const { synthetic_token } = this.state;
+        console.log('=== instanceSyntheticToken ===', instanceSyntheticToken);
 
-    //     //@dev - 1. we will create synthetic tokens from that contract.
-    //     const collateralToken = await dai;
-    //     await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-    //     await collateralToken.approve(emp.address, web3.utils.toWei("10000"));
 
-    //     //@dev - 2. We can now create a synthetic token position
-    //     await emp.create({ rawValue: web3.utils.toWei("0.15") }, { rawValue: web3.utils.toWei("0.1") });
+       
+        // collateral token balance
+        let balance1 = await collateral_token.methods.balanceOf(accounts[0]).call();
+        console.log('=== balance of collateralToken ===', balance1);
 
-    //     //dev - 3. check that we now have synthetic tokens
-    //     const syntheticToken = await SyntheticToken.at(await emp.tokenCurrency())(await collateralToken.balanceOf(accounts[0]))
-    //       .toString()(
-    //         // collateral token balance
-    //         await syntheticToken.balanceOf(accounts[0])
-    //       )
-    //       .toString();
-    //     // synthetic token balance
-    //     await emp.positions(accounts[0]);
-    //     // position information
-    // }
+        // synthetic token balance
+        let balance2 = await synthetic_token.methods.isMinter(accounts[0]).call();
+        console.log('=== balance of syntheticToken ===', balance2);
+
+        // position information
+        let position = await synthetic_token.methods.positions(accounts[0]).send({ from: accounts[0] });
+        console.log('=== balance of syntheticToken ===', position);
+    }
 
     // redeemToken = async () => {
     //     const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry } = this.state;
@@ -208,7 +275,7 @@ export default class StakeholderRegistry extends Component {
           ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
           IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
           Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol  
-          AddressWhitelist = require("../../../../build/contracts/AddressWhitelist.json");  //@dev - AddressWhitelist.sol  
+          AddressWhitelist = require("../../../../build/contracts/AddressWhitelist.json");  //@dev - AddressWhitelist.sol 
         } catch (e) {
           console.log(e);
         }
@@ -371,7 +438,11 @@ export default class StakeholderRegistry extends Component {
                         >
                             <h4>UMA Synthetic Tokens HackMoney</h4> <br />
 
+                            <Button size={'small'} mt={3} mb={2} onClick={this._createSyntheticTokenPosition}> Create SyntheticToken Position </Button> <br />
+
                             <Button size={'small'} mt={3} mb={2} onClick={this._createExpiringMultiParty}> Create Expiring MultiParty </Button> <br />
+
+                            <Button size={'small'} mt={3} mb={2} onClick={this.createNewToken}> Create New Token </Button> <br />
 
                             <hr />                            
 

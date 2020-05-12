@@ -71,8 +71,10 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
 
+        Registry registry = new Registry();
         registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
 
+        AddressWhitelist addressWhitelist = new AddressWhitelist();
         addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
 
         address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);

@@ -41,9 +41,6 @@ export default class StakeholderRegistry extends Component {
     _createSyntheticTokenPosition = async () => {
         const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
-        const res = await stakeholder_registry.methods.createContractViaNew().send({ from: accounts[0] });
-        console.log('=== res of createContractViaNew() ===', res);
-
         const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                                     //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
                                     collateralAddress: DAI_ADDRESS, 
@@ -55,6 +52,9 @@ export default class StakeholderRegistry extends Component {
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
+
+        const res = await stakeholder_registry.methods.createContractViaNew().send({ from: accounts[0] });
+        console.log('=== res of createContractViaNew() ===', res);
 
         const txResult = await stakeholder_registry.methods.createSyntheticTokenPosition(constructorParams).send({ from: accounts[0] });
         console.log('=== txResult of createSyntheticTokenPosition() ===', txResult);        

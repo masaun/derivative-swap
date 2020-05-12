@@ -1,17 +1,15 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-//import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-//import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
-//import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 // Use original Ownable.sol
-//import "./lib/OwnableOriginal.sol";
+import "./lib/OwnableOriginal.sol";
 
 // Storage
-//import "./storage/McStorage.sol";
-//import "./storage/McConstants.sol";
+import "./storage/McStorage.sol";
+import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
 import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
@@ -29,7 +27,7 @@ import "./CreateContractViaNew.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract StakeholderRegistry is CreateContractViaNew {
+contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConstants {
     using SafeMath for uint;
 
     //@dev - Token Address
@@ -37,32 +35,33 @@ contract StakeholderRegistry is CreateContractViaNew {
     address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
     address EXPIRING_MULTIPARTY_ADDRESS;
 
+    CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
-    // TokenFactory public tokenFactory;
-    // ExpiringMultiPartyCreator public expiringMultiPartyCreator;
-    // IdentifierWhitelist public identifierWhitelist;
-    // Registry public registry;
-    // AddressWhitelist public addressWhitelist;
-    // Finder public finder;
-    // Timer public timer;
 
-
-    constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
+    constructor(address _erc20, address _createContractViaNew) public {
+    // constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
         dai = IERC20(_erc20);
         DAI_ADDRESS = _erc20;
-        EXPIRING_MULTIPARTY_CREATOR_ADDRESS = _expiringMultiPartyCreator;
 
-        tokenFactory = TokenFactory(_tokenFactory);
-        expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
-        registry = Registry(_registry);
-        addressWhitelist = AddressWhitelist(_addressWhitelist);
+        createContractViaNew = CreateContractViaNew(_createContractViaNew);
+        // tokenFactory = TokenFactory(_tokenFactory);
+        // expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
+        // identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
+        // registry = Registry(_registry);
+        // addressWhitelist = AddressWhitelist(_addressWhitelist);
     }
 
 
     function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
         //@dev - Call from createContractViaNew() method
-        (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer) = createContractViaNew();
+        TokenFactory tokenFactory;
+        IdentifierWhitelist identifierWhitelist;
+        Registry registry;
+        AddressWhitelist addressWhitelist;
+        Finder finder;
+        Timer timer;
+
+        (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer) = createContractViaNew.createContractViaNew();
 
         //@dev - Create ExpiringMultiParty
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
@@ -106,7 +105,8 @@ contract StakeholderRegistry is CreateContractViaNew {
         string memory _tokenSymbol,
         uint8 _tokenDecimals
     ) public returns (ExpandedIERC20 _newToken) {
-        ExpandedIERC20 _newToken = tokenFactory.createToken(_tokenName, _tokenSymbol, _tokenDecimals);
+        ExpandedIERC20 _newToken;  // Temporality
+        //ExpandedIERC20 _newToken = tokenFactory.createToken(_tokenName, _tokenSymbol, _tokenDecimals);
         return _newToken;
     }
     

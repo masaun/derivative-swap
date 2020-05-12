@@ -1,18 +1,6 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
-import "@openzeppelin/contracts/math/SafeMath.sol";
-
-// Use original Ownable.sol
-import "./lib/OwnableOriginal.sol";
-
-// Storage
-import "./storage/McStorage.sol";
-import "./storage/McConstants.sol";
-
 // SyntheticToken from UMA
 import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
 import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
@@ -26,7 +14,7 @@ import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract CreateContractViaNew is OwnableOriginal(msg.sender), McStorage, McConstants {
+contract CreateContractViaNew {
     using SafeMath for uint;
 
     TokenFactory public tokenFactory;

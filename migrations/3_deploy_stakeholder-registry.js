@@ -24,7 +24,7 @@ module.exports = async function(deployer, network, accounts) {
     let ownerAddress = walletAddressList["WalletAddress1"];
 
     await deployer.deploy(StakeholderRegistry,
-                          // _erc20, 
+                          _erc20, 
                           // _tokenFactory, 
                           // _expiringMultiPartyCreator, 
                           // _identifierWhitelist, 

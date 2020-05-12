@@ -60,7 +60,13 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         collateralToken.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, 150000000000000000);  // 0.15 Ether
 
         // @dev - 2. We can now create a synthetic token position
-        expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+        //expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+    }
+
+
+    function createContractViaNew() public returns (IdentifierWhitelist identifierWhitelist) {
+        IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
+        return identifierWhitelist;
     }
     
 

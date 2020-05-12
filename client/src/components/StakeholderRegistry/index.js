@@ -41,6 +41,9 @@ export default class StakeholderRegistry extends Component {
     _createSyntheticTokenPosition = async () => {
         const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
 
+        const res = await stakeholder_registry.methods.createContractViaNew().send({ from: accounts[0] });
+        console.log('=== res of createContractViaNew() ===', res);
+
         const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                                     //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
                                     collateralAddress: DAI_ADDRESS, 
@@ -59,7 +62,12 @@ export default class StakeholderRegistry extends Component {
 
 
     _createExpiringMultiParty = async () => {
-        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+
+        const FinancialContractsAdmin = contractAddressList["Kovan"]["UMA"]["FinancialContractsAdmin"];
+
+        const deployer = (await web3.eth.getAccounts())[0];
+        console.log('=== deployer ===', deployer);  
 
         ////////////////////////////////////////////////
         /// Parameterize and deploy a contract
@@ -69,8 +77,10 @@ export default class StakeholderRegistry extends Component {
         console.log('=== tokenFactoryAddress ===', tokenFactoryAddress);        
         // Log: === tokenFactoryAddress === 0x478049C316035a3Cf0e1d73fdeD5BC45D1CeFde4
 
-        // Whitelist collateral currency
-        //await collateralTokenWhitelist.addToWhitelist(collateralToken.address, { from: contractCreator });
+        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
+        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
+        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b   
+
 
         const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                                     //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
@@ -84,12 +94,8 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
-        await registry.methods.addMember(1, expiring_multiparty_creator.address).send({ from: accounts[0] });
-
-        let collateralTokenWhitelist = await expiring_multiparty_creator.methods.collateralTokenWhitelist().call();
-        console.log('=== collateralTokenWhitelist ===', collateralTokenWhitelist);
-        // Log: === collateralTokenWhitelist === 0xAc803f66CB647999036fC6fACd205c3a00650b0b
+        //await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
+        //await registry.methods.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS).send({ from: accounts[0] });
 
         await address_whitelist.methods.addToWhitelist(collateralTokenWhitelist).send({ from: accounts[0] });
 
@@ -101,10 +107,6 @@ export default class StakeholderRegistry extends Component {
 
     createNewToken = async () => {
         const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
-
-
-
-
 
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
@@ -133,6 +135,7 @@ export default class StakeholderRegistry extends Component {
                         SYNTHETIC_TOKEN_ADDRESS: SYNTHETIC_TOKEN_ADDRESS });
         const { synthetic_token } = this.state;
         console.log('=== instanceSyntheticToken ===', instanceSyntheticToken);
+
 
        
         // collateral token balance

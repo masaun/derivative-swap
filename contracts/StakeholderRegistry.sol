@@ -12,13 +12,12 @@ import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
-import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";
+import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
-import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 
 // Original Contract
 import "./CreateContractViaNew.sol";
@@ -33,7 +32,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //@dev - Token Address
     address DAI_ADDRESS;
     address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
-    //address EXPIRING_MULTIPARTY_ADDRESS;
+    address EXPIRING_MULTIPARTY_ADDRESS;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
@@ -75,7 +74,6 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
         //ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        //address EXPIRING_MULTIPARTY_ADDRESS;
         // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
         return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
     }

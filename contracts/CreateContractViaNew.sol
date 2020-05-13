@@ -2,13 +2,12 @@ pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
 // SyntheticToken from UMA
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
-import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";
+import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
-import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 
 
 /***

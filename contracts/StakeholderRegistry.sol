@@ -33,7 +33,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //@dev - Token Address
     address DAI_ADDRESS;
     address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
-    address EXPIRING_MULTIPARTY_ADDRESS;
+    //address EXPIRING_MULTIPARTY_ADDRESS;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
@@ -52,7 +52,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     }
 
 
-    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
+    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {
         //@dev - Call from createContractViaNew() method
         TokenFactory tokenFactory;
         IdentifierWhitelist identifierWhitelist;
@@ -73,10 +73,11 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         address _tokenFactoryAddress = address(tokenFactory);
         address _timerAddress = address(timer);
 
-        ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
+        //ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        address EXPIRING_MULTIPARTY_ADDRESS;
+        //address EXPIRING_MULTIPARTY_ADDRESS;
         // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+        return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
     }
 
     // function createContractViaNew() 

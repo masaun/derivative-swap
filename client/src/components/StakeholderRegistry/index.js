@@ -67,6 +67,9 @@ export default class StakeholderRegistry extends Component {
     _createExpiringMultiParty = async () => {
         const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
 
+        const owner = await identifier_whitelist.methods.owner().call();
+        console.log('=== owner ===', owner);  
+
         const FinancialContractsAdmin = contractAddressList["Kovan"]["UMA"]["FinancialContractsAdmin"];
 
         const deployer = (await web3.eth.getAccounts())[0];
@@ -97,7 +100,7 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: accounts[0] });
+        await identifier_whitelist.methods.addSupportedIdentifier(constructorParams.priceFeedIdentifier).send({ from: owner.toString() });
         await registry.methods.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS).send({ from: accounts[0] });
         await address_whitelist.methods.addToWhitelist(collateralTokenWhitelist).send({ from: accounts[0] });
 

@@ -20,28 +20,24 @@ const _expiringMultiPartyLib = contractAddressList["Kovan"]["UMA"]["ExpiringMult
 
 
 module.exports = async function(deployer, network, accounts) {
-  //const keys = getKeysForNetwork(network, accounts);
-  //const controllableTiming = enableControllableTiming(network);
+    const deployerAddress = accounts[0];
+    //const keys = getKeysForNetwork(network, accounts);
+    const controllableTiming = _timer;
 
-  console.log('=== deployer, accounts ===', deployer, accounts);
-  const deployerAddress = accounts[0];
+    // Deploy whitelists.
+    const collateralCurrencyWhitelist = await AddressWhitelist.at(_addressWhitelist);
+    const finder = await Finder.at(_finder);
+    const tokenFactory = await TokenFactory.at(_tokenFactory);
+    //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);
 
-  // Deploy whitelists.
-  const collateralCurrencyWhitelist = await AddressWhitelist.at(_addressWhitelist);
-  const finder = await Finder.at(_finder);
-  const tokenFactory = await TokenFactory.at(_tokenFactory);
-  //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);
+    // Deploy EMPLib and link to EMPCreator.
+    await deployer.deploy(ExpiringMultiPartyLib);
+    await deployer.link(ExpiringMultiPartyLib, ExpiringMultiPartyCreator);
 
-  // Deploy EMPLib and link to EMPCreator.
-  await deployer.deploy(ExpiringMultiPartyLib);
-  await deployer.link(ExpiringMultiPartyLib, ExpiringMultiPartyCreator);
-
-  await deployer.deploy(
-    ExpiringMultiPartyCreator,
-    finder.address,
-    collateralCurrencyWhitelist.address,
-    tokenFactory.address,
-    _timer,
-    { from: accounts[0] }
-  );
+    await deployer.deploy(ExpiringMultiPartyCreator,
+                          finder.address,
+                          collateralCurrencyWhitelist.address,
+                          tokenFactory.address,
+                          controllableTiming,
+                          { from: deployerAddress });
 };

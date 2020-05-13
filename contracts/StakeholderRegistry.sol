@@ -21,6 +21,8 @@ import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPar
 //import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
+import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+
 
 // Original Contract
 import "./CreateContractViaNew.sol";
@@ -43,23 +45,27 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //address FINDER;
     //address TOKEN_FACTORY;
     //address TIMER;
+    address IDENTIFIER_WHITELIST;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
+    IdentifierWhitelist public identifierWhitelist;
 
     constructor(address _erc20, 
                 address _createContractViaNew, 
                 //address _expiringMultiPartyLib,
-                address _expiringMultiPartyCreator
+                address _expiringMultiPartyCreator,
                 //address _addressWhitelist,
                 //address _finder,
-                //address _tokenFactory
+                //address _tokenFactory,
+                address _identifierWhitelist
     ) public {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
+        identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
@@ -67,12 +73,12 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         // FINDER = _finder;
         // TOKEN_FACTORY = _tokenFactory;
         // TIMER = 0x0000000000000000000000000000000000000000;
+        IDENTIFIER_WHITELIST = _identifierWhitelist;
     }
 
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
-        // ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(FINDER, ADDRESS_WHITELIST, TOKEN_FACTORY, TIMER);
-
+        identifierWhitelist.addSupportedIdentifier(params.priceFeedIdentifier);   
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
     

@@ -2,6 +2,7 @@ var StakeholderRegistry = artifacts.require("StakeholderRegistry");
 var CreateContractViaNew = artifacts.require("CreateContractViaNew");
 //var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
+var IdentifierWhitelist = artifacts.require("IdentifierWhitelist");
 var IERC20 = artifacts.require("IERC20");
 
 //@dev - Import from exported file
@@ -16,6 +17,7 @@ const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
 //const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 //const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 //const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
+const _identifierWhitelist = IdentifierWhitelist.address;
 
 //@dev - Create a instance of ExpiringMultiPartyLib.sol
 //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);
@@ -37,6 +39,7 @@ module.exports = async function(deployer, network, accounts) {
                           // _addressWhitelist,
                           // _finder,
                           // _tokenFactory
+                          _identifierWhitelist
           ).then(async function(stakeholderRegistry) {
         if(ownerAddress && ownerAddress!="") {
             console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)

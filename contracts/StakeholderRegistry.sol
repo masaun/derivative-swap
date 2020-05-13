@@ -39,10 +39,10 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     address EXPIRING_MULTIPARTY;
     //address EXPIRING_MULTIPARTY_LIB;
     address EXPIRING_MULTIPARTY_CREATOR;
-    address ADDRESS_WHITELIST;
-    address FINDER;
-    address TOKEN_FACTORY;
-    address TIMER;
+    //address ADDRESS_WHITELIST;
+    //address FINDER;
+    //address TOKEN_FACTORY;
+    //address TIMER;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
@@ -51,28 +51,29 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     constructor(address _erc20, 
                 address _createContractViaNew, 
                 //address _expiringMultiPartyLib,
-                address _expiringMultiPartyCreator,
-                address _addressWhitelist,
-                address _finder,
-                address _tokenFactory
+                address _expiringMultiPartyCreator
+                //address _addressWhitelist,
+                //address _finder,
+                //address _tokenFactory
     ) public {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
+        expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
-        ADDRESS_WHITELIST = _addressWhitelist;
-        FINDER = _finder;
-        TOKEN_FACTORY = _tokenFactory;
-        TIMER = 0x0000000000000000000000000000000000000000;
+        // ADDRESS_WHITELIST = _addressWhitelist;
+        // FINDER = _finder;
+        // TOKEN_FACTORY = _tokenFactory;
+        // TIMER = 0x0000000000000000000000000000000000000000;
     }
 
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
-        ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(FINDER, ADDRESS_WHITELIST, TOKEN_FACTORY, TIMER);
+        // ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(FINDER, ADDRESS_WHITELIST, TOKEN_FACTORY, TIMER);
 
-        // address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
+        address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
     
 

@@ -21,7 +21,7 @@ const _expiringMultiPartyLib = contractAddressList["Kovan"]["UMA"]["ExpiringMult
 
 module.exports = async function(deployer, network, accounts) {
     // Initialize owner address if you want to transfer ownership of contract to some other address
-    let ownerAddress = walletAddressList["WalletAddress1"];
+    //let ownerAddress = walletAddressList["WalletAddress1"];
 
     const deployerAddress = accounts[0];
     //const keys = getKeysForNetwork(network, accounts);
@@ -42,10 +42,11 @@ module.exports = async function(deployer, network, accounts) {
                           collateralCurrencyWhitelist.address,
                           tokenFactory.address,
                           controllableTiming,
-                          { from: deployerAddress }).then(async function(expiringMultiPartyCreator) {
-        if(ownerAddress && ownerAddress!="") {
-            console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
-            await expiringMultiPartyCreator.transferOwnership(ownerAddress);
-        }
-    });
+                          { from: deployerAddress })
+    //               .then(async function(expiringMultiPartyCreator) {
+    //     if(ownerAddress && ownerAddress!="") {
+    //         console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
+    //         await expiringMultiPartyCreator.transferOwnership(ownerAddress);
+    //     }
+    // });
 };

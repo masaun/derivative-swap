@@ -80,25 +80,6 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
     }
 
-    // function createContractViaNew() 
-    //     public 
-    //     returns (IdentifierWhitelist identifierWhitelist, 
-    //              Registry registry, 
-    //              AddressWhitelist addressWhitelist, 
-    //              Finder finder,
-    //              TokenFactory tokenFactory,
-    //              Timer timer) 
-    // {
-    //     IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
-    //     Registry registry = new Registry();
-    //     AddressWhitelist addressWhitelist = new AddressWhitelist();
-    //     Finder finder = new Finder();
-    //     TokenFactory tokenFactory = new TokenFactory();
-    //     Timer timer = new Timer();
-
-    //     return (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer);
-    // }
-    
 
 
     function _createToken(

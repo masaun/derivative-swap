@@ -29,6 +29,8 @@ export default class StakeholderRegistry extends Component {
             route: window.location.pathname.replace("/", "")
         };
 
+        this.createEMP = this.createEMP.bind(this);
+
         this._createSyntheticTokenPosition = this._createSyntheticTokenPosition.bind(this);
         this._createExpiringMultiParty = this._createExpiringMultiParty.bind(this); 
         this.createNewToken = this.createNewToken.bind(this);
@@ -36,6 +38,28 @@ export default class StakeholderRegistry extends Component {
         this.createToken = this.createToken.bind(this);
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
+
+
+    createEMP = async () => {
+        const { accounts, web3, dai, DAI_ADDRESS, expiring_multiparty_lib, stakeholder_registry } = this.state;
+
+        const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                                    //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
+                                    collateralAddress: DAI_ADDRESS, 
+                                    priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                                    syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("0.015") }, 
+                                    disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
+                                    timerAddress: '0x0000000000000000000000000000000000000000' }
+
+        const res = await stakeholder_registry.methods.deploy(constructorParams).send({ from: accounts[0] });                                    
+        //const res = await expiring_multiparty_lib.methods.deploy(constructorParams).send({ from: accounts[0] });
+        console.log('=== deploy() - ExpiringMultiPartyLib.sol ===', res);
+    }
+ 
 
 
     _createSyntheticTokenPosition = async () => {
@@ -266,6 +290,7 @@ export default class StakeholderRegistry extends Component {
         let Dai = {};
         let TokenFactory = {};
         let ExpiringMultiParty = {};
+        let ExpiringMultiPartyLib = {};
         let ExpiringMultiPartyCreator = {};
         let IdentifierWhitelist = {};
         let Registry = {};
@@ -275,6 +300,7 @@ export default class StakeholderRegistry extends Component {
           Dai = require("../../../../build/contracts/IERC20.json");    //@dev - DAI
           TokenFactory = require("../../../../build/contracts/TokenFactory.json");  //@dev - TokenFactory.sol
           ExpiringMultiParty = require("../../../../build/contracts/ExpiringMultiParty.json");  //@dev - ExpiringMultiParty.sol
+          ExpiringMultiPartyLib = require("../../../../build/contracts/ExpiringMultiPartyLib.json");
           ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
           IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
           Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol  
@@ -339,6 +365,15 @@ export default class StakeholderRegistry extends Component {
             );
             console.log('=== instanceTokenFactory ===', instanceTokenFactory);
 
+            //@dev - Create instance of ExpiringMultiPartyLib.sol
+            let instanceExpiringMultiPartyLib = null;
+            let EXPIRING_MULTIPARTY_LIB_ADDRESS = contractAddressList["Kovan"]["UMA"]["ExpiringMultiPartyLib"];  //@dev - ExpiringMultiPartyLib.sol from UMA
+            instanceExpiringMultiPartyLib = new web3.eth.Contract(
+                ExpiringMultiPartyLib.abi,
+                EXPIRING_MULTIPARTY_LIB_ADDRESS,
+            );
+            console.log('=== instanceExpiringMultiPartyLib ===', instanceExpiringMultiPartyLib);
+
             //@dev - Create instance of ExpiringMultiPartyCreator.sol
             let instanceExpiringMultiPartyCreator = null;
             let EXPIRING_MULTIPARTY_CREATOR_ADDRESS = contractAddressList["Kovan"]["UMA"]["ExpiringMultiPartyCreator"];  //@dev - ExpiringMultiPartyCreator.sol from UMA
@@ -391,6 +426,7 @@ export default class StakeholderRegistry extends Component {
                 stakeholder_registry: instanceStakeholderRegistry,
                 dai: instanceDai,
                 token_factory: instanceTokenFactory,
+                expiring_multiparty_lib: instanceExpiringMultiPartyLib,
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
                 identifier_whitelist: instanceIdentifierWhitelist,
                 registry: instanceRegistry,
@@ -398,6 +434,7 @@ export default class StakeholderRegistry extends Component {
                 STAKEHOLDER_REGISTRY_ADDRESS: STAKEHOLDER_REGISTRY_ADDRESS,
                 DAI_ADDRESS: DAI_ADDRESS,
                 TOKEN_FACTORY_ADDRESS: TOKEN_FACTORY_ADDRESS,
+                EXPIRING_MULTIPARTY_LIB_ADDRESS: EXPIRING_MULTIPARTY_LIB_ADDRESS,
                 EXPIRING_MULTIPARTY_CREATOR_ADDRESS: EXPIRING_MULTIPARTY_CREATOR_ADDRESS,
                 IDENTIFIER_WHITELIST_ADDRESS: IDENTIFIER_WHITELIST_ADDRESS,
                 REGISTRY_ADDRESS: REGISTRY_ADDRESS,
@@ -440,6 +477,10 @@ export default class StakeholderRegistry extends Component {
                               borderColor={"#E8E8E8"}
                         >
                             <h4>UMA Synthetic Tokens HackMoney</h4> <br />
+
+                            <Button size={'small'} mt={3} mb={2} onClick={this.createEMP}> Create EMP </Button> <br />
+
+                            <hr />
 
                             <Button size={'small'} mt={3} mb={2} onClick={this._createSyntheticTokenPosition}> Create SyntheticToken Position </Button> <br />
 

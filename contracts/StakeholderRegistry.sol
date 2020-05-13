@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 // Use original Ownable.sol
 import "./lib/OwnableOriginal.sol";
+import "./lib/ExpiringMultiPartyLibAddress.sol";
 
 // Storage
 import "./storage/McStorage.sol";
@@ -14,8 +15,10 @@ import "./storage/McConstants.sol";
 // SyntheticToken from UMA
 import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
+//import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyLib.sol";
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
-import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+//import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
 
@@ -27,29 +30,57 @@ import "./CreateContractViaNew.sol";
  * @notice - This contract is that ...
  **/
 contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConstants {
+
+    //using ExpiringMultiPartyLib for ExpiringMultiParty.ConstructorParams;
     using SafeMath for uint;
 
     //@dev - Token Address
-    address DAI_ADDRESS;
-    address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
-    address EXPIRING_MULTIPARTY_ADDRESS;
+    address DAI;
+    address EXPIRING_MULTIPARTY;
+    //address EXPIRING_MULTIPARTY_LIB;
+    address EXPIRING_MULTIPARTY_CREATOR;
+    address ADDRESS_WHITELIST;
+    address FINDER;
+    address TOKEN_FACTORY;
+    address TIMER;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
+    ExpiringMultiPartyCreator public expiringMultiPartyCreator;
 
-    constructor(address _erc20, address _createContractViaNew) public {
-    // constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
+    constructor(address _erc20, 
+                address _createContractViaNew, 
+                //address _expiringMultiPartyLib,
+                address _expiringMultiPartyCreator,
+                address _addressWhitelist,
+                address _finder,
+                address _tokenFactory
+    ) public {
         dai = IERC20(_erc20);
-        DAI_ADDRESS = _erc20;
-
+        DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
-        // tokenFactory = TokenFactory(_tokenFactory);
-        // expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        // identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
-        // registry = Registry(_registry);
-        // addressWhitelist = AddressWhitelist(_addressWhitelist);
+
+        //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
+        EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
+        ADDRESS_WHITELIST = _addressWhitelist;
+        FINDER = _finder;
+        TOKEN_FACTORY = _tokenFactory;
+        TIMER = 0x0000000000000000000000000000000000000000;
     }
 
+
+    function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+        ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(FINDER, ADDRESS_WHITELIST, TOKEN_FACTORY, TIMER);
+
+        // address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
+    }
+    
+
+
+    // function createEMP(ExpiringMultiParty.ConstructorParams memory constructorParams) public returns (bool) {
+    //     ExpiringMultiPartyLib.deploy(constructorParams);
+    // }
+    
 
     function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {
         //@dev - Call from createContractViaNew() method
@@ -64,7 +95,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
         //@dev - Create ExpiringMultiParty
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
         addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
 
         address _collateralTokenWhitelist = address(addressWhitelist);

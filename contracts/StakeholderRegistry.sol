@@ -39,32 +39,24 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     //@dev - Token Address
     address DAI;
     address EXPIRING_MULTIPARTY;
-    //address EXPIRING_MULTIPARTY_LIB;
     address EXPIRING_MULTIPARTY_CREATOR;
-    //address ADDRESS_WHITELIST;
-    //address FINDER;
-    //address TOKEN_FACTORY;
-    //address TIMER;
     address IDENTIFIER_WHITELIST;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
-    AddressWhitelist public collateralTokenWhitelist;
+    Registry public registry;
 
     constructor(address _erc20, 
                 address _createContractViaNew, 
-                //address _expiringMultiPartyLib,
-                address _expiringMultiPartyCreator
-                //address _addressWhitelist
-                //address _finder,
-                //address _tokenFactory,
-                //address _identifierWhitelist
+                address _expiringMultiPartyCreator,
+                address _registry
     ) public {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
+        registry = Registry(_registry);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
@@ -77,8 +69,8 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
-        // collateralTokenWhitelist = expiringMultiPartyCreator.collateralTokenWhitelist();
-        // collateralTokenWhitelist.addToWhitelist(params.collateralAddress);
+        //@dev - Add Role to EMPCreator contractAddress
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

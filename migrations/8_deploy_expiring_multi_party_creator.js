@@ -14,7 +14,6 @@ var walletAddressList = require('./walletAddress/walletAddress.js');
 
 const _collateralAddress = tokenAddressList["Kovan"]["DAI"]; // DAI address on Kovan
 const _addressWhitelist = AddressWhitelist.address;
-//const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
 const _timer = "0x0000000000000000000000000000000000000000";
@@ -26,7 +25,6 @@ module.exports = async function(deployer, network, accounts) {
     //let ownerAddress = walletAddressList["WalletAddress1"];
 
     const deployerAddress = accounts[0];
-    //const keys = getKeysForNetwork(network, accounts);
     const controllableTiming = _timer;
 
     // Add collateralToken(=DAI) into whitelists.

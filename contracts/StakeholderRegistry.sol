@@ -77,8 +77,8 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
-        collateralTokenWhitelist = expiringMultiPartyCreator.collateralTokenWhitelist();
-        collateralTokenWhitelist.addToWhitelist(params.collateralAddress);
+        // collateralTokenWhitelist = expiringMultiPartyCreator.collateralTokenWhitelist();
+        // collateralTokenWhitelist.addToWhitelist(params.collateralAddress);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

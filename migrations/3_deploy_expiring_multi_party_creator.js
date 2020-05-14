@@ -29,7 +29,7 @@ module.exports = async function(deployer, network, accounts) {
     //const keys = getKeysForNetwork(network, accounts);
     const controllableTiming = _timer;
 
-    // Add whitelists.
+    // Add collateralToken(=DAI) into whitelists.
     const collateralCurrencyWhitelist = await AddressWhitelist.at(_addressWhitelist);
     await collateralCurrencyWhitelist.addToWhitelist(_collateralAddress);
 

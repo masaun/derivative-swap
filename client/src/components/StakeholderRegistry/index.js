@@ -48,11 +48,11 @@ export default class StakeholderRegistry extends Component {
                                     collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("0.015") }, 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
                                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
         const res = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });                                    
@@ -73,11 +73,11 @@ export default class StakeholderRegistry extends Component {
                                     collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("0.015") }, 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
                                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
-                                    minSponsorTokens: { rawValue: web3.utils.toWei("0.1") }, 
+                                    minSponsorTokens: { rawValue: '100000000000000' }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
         const res = await stakeholder_registry.methods.createContractViaNew(constructorParams).send({ from: accounts[0] });

@@ -22,8 +22,8 @@ module.exports = async function(deployer, network, accounts) {
     let ownerAddress = walletAddressList["WalletAddress1"];
 
     // Add Role to EMPCreator contractAddress
-    const registry = await Registry.at(_registry);
-    await registry.addMember(1, _expiringMultiPartyCreator);  //@dev - 1 is "Owner" Role
+    //const registry = await Registry.at(_registry);
+    //await registry.addMember(1, _expiringMultiPartyCreator);  //@dev - 1 is "Owner" Role
 
     await deployer.deploy(StakeholderRegistry,
                           _erc20,

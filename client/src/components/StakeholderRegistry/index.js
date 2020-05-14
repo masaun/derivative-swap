@@ -55,9 +55,12 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const res = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });                                    
-        //const res = await expiring_multiparty_lib.methods.deploy(constructorParams).send({ from: accounts[0] });
-        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res);
+        const _roleId = 1;
+        const res1 = await stakeholder_registry.methods.checkRole(_roleId).call();
+        console.log('=== checkRole() ===', res1);
+
+        const res2 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
+        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res2);
     }
  
 

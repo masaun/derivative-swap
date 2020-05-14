@@ -56,7 +56,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        //registry = Registry(_registry);
+        registry = Registry(_registry);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
@@ -70,17 +70,18 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        Registry registry = new Registry();
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+        //registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
     
+    function checkRole(uint256 _roleId) public view returns (address _currentExclusiveRoleMemberAddress) {
+        return registry.getMember(_roleId);
+    }
+    
 
 
-    // function createEMP(ExpiringMultiParty.ConstructorParams memory constructorParams) public returns (bool) {
-    //     ExpiringMultiPartyLib.deploy(constructorParams);
-    // }
+
     
 
     function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {

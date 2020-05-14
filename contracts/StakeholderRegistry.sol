@@ -45,7 +45,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
-    //Registry public registry;
+    Registry public registry;
 
     constructor(address _erc20, 
                 address _createContractViaNew, 
@@ -56,7 +56,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        //registry = Registry(_registry);
+        registry = Registry(_registry);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
@@ -70,7 +70,8 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        //registry.addMember(2, EXPIRING_MULTIPARTY_CREATOR);
+        registry._createSharedRole(1, 1, [EXPIRING_MULTIPARTY_CREATOR]);
+        registry.addMember(2, EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

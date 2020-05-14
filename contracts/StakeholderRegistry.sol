@@ -65,7 +65,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
         expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
+        //identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
 
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
@@ -78,6 +78,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+        IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
         identifierWhitelist.addSupportedIdentifier(params.priceFeedIdentifier);   
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

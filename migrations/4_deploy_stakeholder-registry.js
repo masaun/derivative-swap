@@ -17,7 +17,7 @@ const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
 //const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 //const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 //const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
-const _identifierWhitelist = contractAddressList["Kovan"]["UMA"]["IdentifierWhitelist"];
+const _identifierWhitelist = IdentifierWhitelist.address;
 
 //@dev - Create a instance of ExpiringMultiPartyLib.sol
 //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);

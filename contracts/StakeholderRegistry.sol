@@ -70,7 +70,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+        registry.addMember(2, EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

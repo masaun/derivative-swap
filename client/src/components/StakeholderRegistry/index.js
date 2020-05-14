@@ -48,7 +48,7 @@ export default class StakeholderRegistry extends Component {
                                     collateralAddress: DAI_ADDRESS, 
                                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
                                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
-                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") }, 
+                                    collateralRequirement: { rawValue: web3.utils.toWei("1.5") },  //@notice - assigned value must be greater than "1"
                                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 

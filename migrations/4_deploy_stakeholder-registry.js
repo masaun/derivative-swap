@@ -2,7 +2,7 @@ var StakeholderRegistry = artifacts.require("StakeholderRegistry");
 var CreateContractViaNew = artifacts.require("CreateContractViaNew");
 //var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
-var IdentifierWhitelist = artifacts.require("IdentifierWhitelist");
+//var IdentifierWhitelist = artifacts.require("IdentifierWhitelist");
 var IERC20 = artifacts.require("IERC20");
 
 //@dev - Import from exported file
@@ -14,10 +14,10 @@ const _erc20 = tokenAddressList["Kovan"]["DAI"];                            // D
 const _createContractViaNew = CreateContractViaNew.address;
 //const _expiringMultiPartyLib = contractAddressList["Kovan"]["UMA"]["ExpiringMultiPartyLib"];
 const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
-//const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
+const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 //const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 //const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
-const _identifierWhitelist = IdentifierWhitelist.address;
+//const _identifierWhitelist = IdentifierWhitelist.address;
 
 //@dev - Create a instance of ExpiringMultiPartyLib.sol
 //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);
@@ -29,17 +29,15 @@ module.exports = async function(deployer, network, accounts) {
     // Initialize owner address if you want to transfer ownership of contract to some other address
     let ownerAddress = walletAddressList["WalletAddress1"];
 
-    //await deployer.link(expiringMultiPartyLib, ExpiringMultiPartyCreator);
-
     await deployer.deploy(StakeholderRegistry,
                           _erc20,
                           _createContractViaNew, 
                           //_expiringMultiPartyLib,
                           _expiringMultiPartyCreator,
-                          // _addressWhitelist,
+                          //_addressWhitelist
                           // _finder,
                           // _tokenFactory
-                          _identifierWhitelist
+                          //_identifierWhitelist
           ).then(async function(stakeholderRegistry) {
         if(ownerAddress && ownerAddress!="") {
             console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)

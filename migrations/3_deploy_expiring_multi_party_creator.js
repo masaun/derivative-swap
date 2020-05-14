@@ -12,7 +12,9 @@ var tokenAddressList = require('./tokenAddress/tokenAddress.js');
 var contractAddressList = require('./contractAddress/contractAddress.js');
 var walletAddressList = require('./walletAddress/walletAddress.js');
 
-const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
+const _collateralAddress = tokenAddressList["Kovan"]["DAI"]; // DAI address on Kovan
+const _addressWhitelist = AddressWhitelist.address;
+//const _addressWhitelist = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 const _tokenFactory = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
 const _timer = "0x0000000000000000000000000000000000000000";
@@ -27,8 +29,10 @@ module.exports = async function(deployer, network, accounts) {
     //const keys = getKeysForNetwork(network, accounts);
     const controllableTiming = _timer;
 
-    // Deploy whitelists.
+    // Add whitelists.
     const collateralCurrencyWhitelist = await AddressWhitelist.at(_addressWhitelist);
+    await collateralCurrencyWhitelist.addToWhitelist(_collateralAddress);
+
     const finder = await Finder.at(_finder);
     const tokenFactory = await TokenFactory.at(_tokenFactory);
     //const expiringMultiPartyLib = ExpiringMultiPartyLib.at(_expiringMultiPartyLib);

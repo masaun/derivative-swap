@@ -74,9 +74,13 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
-    
-    function checkRole(uint256 _roleId) public view returns (address _currentExclusiveRoleMemberAddress) {
-        return registry.getMember(_roleId);
+
+    function checkRoleOfExpiringMultiPartyCreator(uint256 _roleId) public view returns (bool isMember) {
+        checkRole(_roleId, EXPIRING_MULTIPARTY_CREATOR);
+    }
+
+    function checkRole(uint256 _roleId, address _memberToCheck) public view returns (bool isMember) {
+        return registry.holdsRole(_roleId, _memberToCheck);
     }
     
 

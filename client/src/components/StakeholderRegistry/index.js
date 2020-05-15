@@ -56,10 +56,10 @@ export default class StakeholderRegistry extends Component {
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
         const _roleId = 1;
-        const res1 = await stakeholder_registry.methods.checkRole(_roleId).call();
-        console.log('=== checkRole() ===', res1);
+        let res1 = await stakeholder_registry.methods.checkRoleOfExpiringMultiPartyCreator(_roleId).call();
+        console.log('=== checkRole of ExpiringMultiPartyCreator ===', res1);
 
-        const res2 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
+        let res2 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
         console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res2);
     }
  

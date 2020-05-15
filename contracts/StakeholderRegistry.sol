@@ -32,7 +32,7 @@ import "./CreateContractViaNew.sol";
 /***
  * @notice - This contract is that ...
  **/
-abstract contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), McStorage, McConstants {
+contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), McStorage, McConstants {
 
     //using ExpiringMultiPartyLib for ExpiringMultiParty.ConstructorParams;
     using SafeMath for uint;
@@ -42,6 +42,7 @@ abstract contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.se
     address EXPIRING_MULTIPARTY;
     address EXPIRING_MULTIPARTY_CREATOR;
     address IDENTIFIER_WHITELIST;
+    address FINDER;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
@@ -51,8 +52,9 @@ abstract contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.se
     constructor(address _erc20, 
                 address _createContractViaNew, 
                 address _expiringMultiPartyCreator,
-                address _registry
-    ) public {
+                address _registry,
+                address _finder
+    ) public ContractCreator(_finder) {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
@@ -62,7 +64,7 @@ abstract contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.se
         //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
         EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
         // ADDRESS_WHITELIST = _addressWhitelist;
-        // FINDER = _finder;
+        FINDER = _finder;
         // TOKEN_FACTORY = _tokenFactory;
         // TIMER = 0x0000000000000000000000000000000000000000;
         //IDENTIFIER_WHITELIST = _identifierWhitelist;
@@ -76,15 +78,18 @@ abstract contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.se
      * Note that `_registerContract` cannot be called from the constructor because this contract first needs to be given the `ContractCreator` role
      * in order to register with the `Registry`. But, its address is not known until after deployment.
      */
-    function initialize() public {
-        _registerContract(new address[](0), address(this));
-    }
+    // function initialize() public {
+    //     _registerContract(new address[](0), address(this));
+    // }
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        //registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+        registry.addMember(0, EXPIRING_MULTIPARTY_CREATOR);
 
-        initialize();
+        //initialize();
+        //ContractCreator contractCreator = new ContractCreator(FINDER);
+        //contractCreator._registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
+        _registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

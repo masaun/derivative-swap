@@ -9,10 +9,11 @@ var tokenAddressList = require('./tokenAddress/tokenAddress.js');
 var contractAddressList = require('./contractAddress/contractAddress.js');
 var walletAddressList = require('./walletAddress/walletAddress.js');
 
-const _collateralAddress = tokenAddressList["Kovan"]["DAI"];                            // DAI address on Kovan
+const _collateralAddress = tokenAddressList["Kovan"]["DAI"];   // DAI address on Kovan
 const _createContractViaNew = CreateContractViaNew.address;
 const _registry = Registry.address;
 const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
+const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 
 const depositedAmount = web3.utils.toWei("0.1");    // 2.1 DAI which is deposited in deployed contract. 
 
@@ -34,7 +35,8 @@ module.exports = async function(deployer, network, accounts) {
                           _collateralAddress,  // ERC20 address
                           _createContractViaNew, 
                           _expiringMultiPartyCreator,
-                          _registry
+                          _registry,
+                          _finder
           ).then(async function(stakeholderRegistry) {
         if(ownerAddress && ownerAddress!="") {
             console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)

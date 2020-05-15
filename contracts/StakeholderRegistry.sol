@@ -87,9 +87,7 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
         registry.addMember(0, EXPIRING_MULTIPARTY_CREATOR);
 
         //initialize();
-        //ContractCreator contractCreator = new ContractCreator(FINDER);
-        //contractCreator._registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
-        _registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
+        _registerContract(new address[](0), address(this));
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

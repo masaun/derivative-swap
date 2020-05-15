@@ -22,7 +22,6 @@ import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPar
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
-import "./uma/contracts/oracle/implementation/ContractCreator.sol";
 
 
 // Original Contract
@@ -32,7 +31,7 @@ import "./CreateContractViaNew.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), McStorage, McConstants {
+contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConstants {
 
     //using ExpiringMultiPartyLib for ExpiringMultiParty.ConstructorParams;
     using SafeMath for uint;
@@ -54,7 +53,7 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
                 address _expiringMultiPartyCreator,
                 address _registry,
                 address _finder
-    ) public ContractCreator(_finder) {
+    ) public {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
@@ -84,10 +83,11 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        registry.addMember(0, EXPIRING_MULTIPARTY_CREATOR);
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+        registry.addMember(1, address(this));
 
         //initialize();
-        _registerContract(new address[](0), address(this));
+        //registry._registerContract(new address[](0), address(this));
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

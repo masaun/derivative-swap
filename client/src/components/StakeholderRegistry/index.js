@@ -55,7 +55,7 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const _roleId = 1;
+        const _roleId = 0;
         let res1 = await stakeholder_registry.methods.checkRoleOfExpiringMultiPartyCreator(_roleId).call();
         console.log('=== checkRole of ExpiringMultiPartyCreator ===', res1);
 

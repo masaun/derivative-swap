@@ -24,11 +24,13 @@ module.exports = async function(deployer, network, accounts) {
     // Initialize owner address if you want to transfer ownership of contract to some other address
     let ownerAddress = walletAddressList["WalletAddress1"];
 
-    // Add Role to EMPCreator contractAddress
+    //@dev - Add Role to EMPCreator contractAddress
+    //     - enum RoleType { Invalid, Exclusive, Shared }
     const registry = await Registry.at(_registry);
-    await registry.addMember(1, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Owner" Role
-    await registry.addMember(1, _collateralAddress, { from: deployerAddress });          //@dev - 1 is "Owner" Role
-
+    await registry.addMember(1, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
+    await registry.addMember(2, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 2 is "Shared" Role
+    await registry.addMember(1, _collateralAddress, { from: deployerAddress });          //@dev - 1 is "Exclusive" Role
+    await registry.addMember(2, _collateralAddress, { from: deployerAddress });          //@dev - 2 is "Shared" Role
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address

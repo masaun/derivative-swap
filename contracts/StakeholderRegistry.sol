@@ -6,19 +6,24 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 
 // Use original Ownable.sol
 import "./lib/OwnableOriginal.sol";
+import "./lib/ExpiringMultiPartyLibAddress.sol";
 
 // Storage
 import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";  // Inherit SyntheticToken.sol
-import "./uma/contracts/financial-templates/implementation/ExpiringMultiPartyCreator.sol";
-import "./uma/contracts/financial-templates/implementation/TokenFactory.sol";
-import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
+//import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyLib.sol";
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
+//import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
-import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+import "./uma/contracts/oracle/implementation/ContractCreator.sol";
+
 
 // Original Contract
 import "./CreateContractViaNew.sol";
@@ -27,32 +32,82 @@ import "./CreateContractViaNew.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConstants {
+contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), McStorage, McConstants {
+
+    //using ExpiringMultiPartyLib for ExpiringMultiParty.ConstructorParams;
     using SafeMath for uint;
 
     //@dev - Token Address
-    address DAI_ADDRESS;
-    address EXPIRING_MULTIPARTY_CREATOR_ADDRESS;
-    address EXPIRING_MULTIPARTY_ADDRESS;
+    address DAI;
+    address EXPIRING_MULTIPARTY;
+    address EXPIRING_MULTIPARTY_CREATOR;
+    address IDENTIFIER_WHITELIST;
+    address FINDER;
 
     CreateContractViaNew public createContractViaNew;
     IERC20 public dai;
+    ExpiringMultiPartyCreator public expiringMultiPartyCreator;
+    Registry public registry;
 
-    constructor(address _erc20, address _createContractViaNew) public {
-    // constructor(address _erc20, address _tokenFactory, address _expiringMultiPartyCreator, address _identifierWhitelist, address _registry, address _addressWhitelist) public {
+    constructor(address _erc20, 
+                address _createContractViaNew, 
+                address _expiringMultiPartyCreator,
+                address _registry,
+                address _finder
+    ) public ContractCreator(_finder) {
         dai = IERC20(_erc20);
-        DAI_ADDRESS = _erc20;
-
+        DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
-        // tokenFactory = TokenFactory(_tokenFactory);
-        // expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
-        // identifierWhitelist = IdentifierWhitelist(_identifierWhitelist);
-        // registry = Registry(_registry);
-        // addressWhitelist = AddressWhitelist(_addressWhitelist);
+        expiringMultiPartyCreator = ExpiringMultiPartyCreator(_expiringMultiPartyCreator);
+        registry = Registry(_registry);
+
+        //EXPIRING_MULTIPARTY_LIB = _expiringMultiPartyLib;
+        EXPIRING_MULTIPARTY_CREATOR = _expiringMultiPartyCreator;
+        // ADDRESS_WHITELIST = _addressWhitelist;
+        FINDER = _finder;
+        // TOKEN_FACTORY = _tokenFactory;
+        // TIMER = 0x0000000000000000000000000000000000000000;
+        //IDENTIFIER_WHITELIST = _identifierWhitelist;
     }
 
 
-    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (bool) {
+    /**
+     * @notice This should be called after construction of the DepositBox and handles registration with the Registry, which is required
+     * to make price requests in production environments.
+     * @dev This contract must hold the `ContractCreator` role with the Registry in order to register itself as a financial-template with the DVM.
+     * Note that `_registerContract` cannot be called from the constructor because this contract first needs to be given the `ContractCreator` role
+     * in order to register with the `Registry`. But, its address is not known until after deployment.
+     */
+    // function initialize() public {
+    //     _registerContract(new address[](0), address(this));
+    // }
+
+    function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+        //@dev - Add Role to EMPCreator contractAddress
+        registry.addMember(0, EXPIRING_MULTIPARTY_CREATOR);
+
+        //initialize();
+        //ContractCreator contractCreator = new ContractCreator(FINDER);
+        //contractCreator._registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
+        _registerContract(new address[](0), EXPIRING_MULTIPARTY_CREATOR);
+
+        address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
+    }
+
+    function checkRoleOfExpiringMultiPartyCreator(uint256 _roleId) public view returns (bool isMember) {
+        checkRole(_roleId, EXPIRING_MULTIPARTY_CREATOR);
+    }
+
+    function checkRole(uint256 _roleId, address _memberToCheck) public view returns (bool isMember) {
+        return registry.holdsRole(_roleId, _memberToCheck);
+    }
+    
+
+
+
+    
+
+    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {
         //@dev - Call from createContractViaNew() method
         TokenFactory tokenFactory;
         IdentifierWhitelist identifierWhitelist;
@@ -65,7 +120,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
 
         //@dev - Create ExpiringMultiParty
         identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR_ADDRESS);
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
         addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
 
         address _collateralTokenWhitelist = address(addressWhitelist);
@@ -73,31 +128,12 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
         address _tokenFactoryAddress = address(tokenFactory);
         address _timerAddress = address(timer);
 
-        ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
+        //ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        address EXPIRING_MULTIPARTY_ADDRESS;
         // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+        return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
     }
 
-    // function createContractViaNew() 
-    //     public 
-    //     returns (IdentifierWhitelist identifierWhitelist, 
-    //              Registry registry, 
-    //              AddressWhitelist addressWhitelist, 
-    //              Finder finder,
-    //              TokenFactory tokenFactory,
-    //              Timer timer) 
-    // {
-    //     IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
-    //     Registry registry = new Registry();
-    //     AddressWhitelist addressWhitelist = new AddressWhitelist();
-    //     Finder finder = new Finder();
-    //     TokenFactory tokenFactory = new TokenFactory();
-    //     Timer timer = new Timer();
-
-    //     return (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer);
-    // }
-    
 
 
     function _createToken(

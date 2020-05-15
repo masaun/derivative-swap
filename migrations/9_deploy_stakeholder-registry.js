@@ -28,9 +28,10 @@ module.exports = async function(deployer, network, accounts) {
     //     - enum RoleType { Invalid, Exclusive, Shared }
     const registry = await Registry.at(_registry);
     await registry.addMember(1, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
-    await registry.addMember(2, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 2 is "Shared" Role
-    await registry.addMember(1, _collateralAddress, { from: deployerAddress });          //@dev - 1 is "Exclusive" Role
-    await registry.addMember(2, _collateralAddress, { from: deployerAddress });          //@dev - 2 is "Shared" Role
+    //await registry.addMember(2, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 2 is "Shared" Role
+
+    let getMemberAddress = await registry.getMember(1, { from: deployerAddress });  //@dev - 2 is "Shared" Role
+    console.log("=== getMember() address ===", getMemberAddress)
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address

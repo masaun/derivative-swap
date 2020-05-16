@@ -32,8 +32,8 @@ module.exports = async function(deployer, network, accounts) {
     const _roleId = 1
     const registry = await Registry.deployed();
     await registry.addMember(_roleId, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
-    const checkRole = await registry.holdsRole(_roleId, _expiringMultiPartyCreator);
-    console.log("checkRole", checkRole);    
+    const checkRole1 = await registry.holdsRole(_roleId, _expiringMultiPartyCreator);
+    console.log("=== checkRole of expiringMultiPartyCreator ===", checkRole1);  // [Result]: True
 
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 
@@ -45,9 +45,7 @@ module.exports = async function(deployer, network, accounts) {
                      disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                      minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                      timerAddress: '0x0000000000000000000000000000000000000000' }
-    //const expiringMultiPartyLib = await ExpiringMultiPartyLib.deployed();
-    //console.log(`=== expiringMultiPartyLib deployed ===: ${expiringMultiPartyLib}`)
-    //await expiringMultiPartyLib.deploy(params);
+    
     //const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
     //await expiringMultiPartyCreator.createExpiringMultiParty(params);
 
@@ -68,6 +66,10 @@ module.exports = async function(deployer, network, accounts) {
 
     await registry.addMember(1, stakeholderRegistry.address);
     console.log("- Granted StakeholderRegistry contract right to register itself with DVM");
+
+    const checkRole2 = await registry.holdsRole(_roleId, stakeholderRegistry.address);
+    console.log("=== checkRole of stakeholderRegistry ===", checkRole2);  // [Result]: True
+
     await stakeholderRegistry.initialize();
     console.log("- StakeholderRegistry is registered");
 

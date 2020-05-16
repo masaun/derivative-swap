@@ -39,9 +39,12 @@ module.exports = async function(deployer, network, accounts) {
     console.log("=== checkRole of expiringMultiPartyCreator ===", checkRole1);  // [Result]: True
 
     const finder = await Finder.deployed();
-    await finder.changeImplementationAddress(web3.utils.utf8ToHex(interfaceName.ExpiringMultiPartyCreator), _expiringMultiPartyCreator, {
+    var _interfaceName = web3.utils.utf8ToHex(interfaceName.ExpiringMultiPartyCreator);
+    var _implementationAddress = _expiringMultiPartyCreator;
+    await finder.changeImplementationAddress(_interfaceName, _implementationAddress, {
         from: deployerAddress
     });
+    console.log("=== OK / finder.changeImplementationAddress of expiringMultiPartyCreator ===");  // [Result]： OK!!
 
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 
@@ -56,7 +59,7 @@ module.exports = async function(deployer, network, accounts) {
     
     const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.at(_expiringMultiPartyCreator);
     await expiringMultiPartyCreator.createExpiringMultiParty(params);
-
+    console.log("=== OK / expiringMultiPartyCreator.createExpiringMultiParty() ==="); // [Result]： Fail
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address

@@ -44,7 +44,10 @@ module.exports = async function(deployer, network, accounts) {
     await finder.changeImplementationAddress(_interfaceName, _implementationAddress, {
         from: deployerAddress
     });
-    console.log("=== OK / finder.changeImplementationAddress of expiringMultiPartyCreator ===");  // [Result]： OK!!
+    console.log("=== OK / finder.changeImplementationAddress() of expiringMultiPartyCreator ===");  // [Result]： OK!!
+
+    let implementedAddress = await finder.getImplementationAddress(_interfaceName { from: deployerAddress });
+    console.log("=== finder.getImplementationAddress() of expiringMultiPartyCreator ===\n", implementedAddress);  // [Result]：    
 
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 
@@ -57,7 +60,7 @@ module.exports = async function(deployer, network, accounts) {
                      minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                      timerAddress: '0x0000000000000000000000000000000000000000' }
     
-    const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.at(_expiringMultiPartyCreator);
+    const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
     await expiringMultiPartyCreator.createExpiringMultiParty(params);
     console.log("=== OK / expiringMultiPartyCreator.createExpiringMultiParty() ==="); // [Result]： Fail
 

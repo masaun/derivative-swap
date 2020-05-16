@@ -5,6 +5,7 @@ var Finder = artifacts.require("Finder");
 var Registry = artifacts.require("Registry");
 var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
+const { interfaceName } = require("../utils/Constants.js");
 
 //@dev - Import from exported file
 var tokenAddressList = require('./tokenAddress/tokenAddress.js');
@@ -37,6 +38,11 @@ module.exports = async function(deployer, network, accounts) {
     const checkRole1 = await registry.holdsRole(_roleId, _expiringMultiPartyCreator);
     console.log("=== checkRole of expiringMultiPartyCreator ===", checkRole1);  // [Result]: True
 
+    const finder = await Finder.at(_finder);
+    await finder.changeImplementationAddress(web3.utils.utf8ToHex(interfaceName.ExpiringMultiPartyCreator), _expiringMultiPartyCreator, {
+        from: deployerAddress
+    });
+
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 
                      priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
@@ -66,6 +72,12 @@ module.exports = async function(deployer, network, accounts) {
                   // });
 
     const stakeholderRegistry = await StakeholderRegistry.deployed();
+    const _stakeholderRegistry = StakeholderRegistry.address;
+
+    const finder = await Finder.at(_finder);
+    await finder.changeImplementationAddress(web3.utils.utf8ToHex(interfaceName.StakeholderRegistry), _stakeholderRegistry, {
+        from: deployerAddress
+    });
 
     await registry.addMember(1, stakeholderRegistry.address);
     console.log("- Granted StakeholderRegistry contract right to register itself with DVM");

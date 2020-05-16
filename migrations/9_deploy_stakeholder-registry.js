@@ -46,8 +46,8 @@ module.exports = async function(deployer, network, accounts) {
     });
     console.log("=== OK / finder.changeImplementationAddress() of expiringMultiPartyCreator ===");  // [Result]： OK!!
 
-    let implementedAddress = await finder.getImplementationAddress(_interfaceName { from: deployerAddress });
-    console.log("=== finder.getImplementationAddress() of expiringMultiPartyCreator ===\n", implementedAddress);  // [Result]：    
+    let implementedAddress = await finder.getImplementationAddress(_interfaceName, { from: deployerAddress });
+    console.log("=== finder.getImplementationAddress() of expiringMultiPartyCreator ===\n", implementedAddress);  // [Result]： OK / 0x39875005c2A5feC300538Fe62c0f70a75c60cFB1  
 
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 

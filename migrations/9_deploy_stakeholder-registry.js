@@ -2,6 +2,7 @@ var StakeholderRegistry = artifacts.require("StakeholderRegistry");
 var IERC20 = artifacts.require("IERC20");
 var CreateContractViaNew = artifacts.require("CreateContractViaNew");
 var Registry = artifacts.require("Registry");
+var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
 
 //@dev - Import from exported file
@@ -27,24 +28,48 @@ module.exports = async function(deployer, network, accounts) {
 
     //@dev - Add Role to EMPCreator contractAddress
     //     - enum RoleType { Invalid, Exclusive, Shared }
-    const registry = await Registry.at(_registry);
+    const registry = await Registry.deployed();
     await registry.addMember(1, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
     //await registry.addMember(2, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 2 is "Shared" Role
+
+    const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
+                     collateralAddress: _collateralAddress, 
+                     priceFeedIdentifier: web3.utils.utf8ToHex("UMATEST"), 
+                     syntheticName: "Test UMA Token", syntheticSymbol: "UMATEST", 
+                     collateralRequirement: { rawValue: web3.utils.toWei("1.5") },  //@notice - assigned value must be greater than "1"
+                     disputeBondPct: { rawValue: web3.utils.toWei("0.1") }, 
+                     sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                     disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
+                     minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
+                     timerAddress: '0x0000000000000000000000000000000000000000' }
+    //const expiringMultiPartyLib = await ExpiringMultiPartyLib.deployed();
+    //console.log(`=== expiringMultiPartyLib deployed ===: ${expiringMultiPartyLib}`)
+    //await expiringMultiPartyLib.deploy(params);
+    //const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
+    //await expiringMultiPartyCreator.createExpiringMultiParty(params);
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address
                           _createContractViaNew, 
                           _expiringMultiPartyCreator,
                           _registry,
-                          _finder
-          ).then(async function(stakeholderRegistry) {
-        if(ownerAddress && ownerAddress!="") {
-            console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
-            await stakeholderRegistry.transferOwnership(ownerAddress);
-        }
-    });
+                          _finder)
+                  .then(async function(stakeholderRegistry) {
+                       if(ownerAddress && ownerAddress!="") {
+                           console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
+                           await stakeholderRegistry.transferOwnership(ownerAddress);
+                       }
+                  });
 
     const stakeholderRegistry = await StakeholderRegistry.deployed();
+
+    await registry.addMember(1, stakeholderRegistry.address);
+    console.log("- Granted StakeholderRegistry contract right to register itself with DVM");
+    await stakeholderRegistry.initialize();
+    console.log("- StakeholderRegistry is registered");
+
+
+
 
     const iERC20 = await IERC20.at(_collateralAddress);  // _collateralAddress is ERC20 address
 

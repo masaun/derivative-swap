@@ -14,6 +14,7 @@ import "./storage/McConstants.sol";
 
 // SyntheticToken from UMA
 import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+//import "./uma/contracts/financial-templates/common/FeePayer.sol";
 import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
 //import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyLib.sol";
@@ -22,7 +23,7 @@ import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPar
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
-
+import "./uma/contracts/oracle/implementation/ContractCreator.sol";
 
 // Original Contract
 import "./CreateContractViaNew.sol";
@@ -31,10 +32,13 @@ import "./CreateContractViaNew.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConstants {
+contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), McStorage, McConstants {
 
     //using ExpiringMultiPartyLib for ExpiringMultiParty.ConstructorParams;
     using SafeMath for uint;
+
+    // This blocks every public state-modifying method until it flips to true, via the `initialize()` method.
+    bool private initialized;
 
     //@dev - Token Address
     address DAI;
@@ -53,7 +57,7 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
                 address _expiringMultiPartyCreator,
                 address _registry,
                 address _finder
-    ) public {
+    ) public ContractCreator(_finder) {
         dai = IERC20(_erc20);
         DAI = _erc20;
         createContractViaNew = CreateContractViaNew(_createContractViaNew);
@@ -70,24 +74,14 @@ contract StakeholderRegistry is OwnableOriginal(msg.sender), McStorage, McConsta
     }
 
 
-    /**
-     * @notice This should be called after construction of the DepositBox and handles registration with the Registry, which is required
-     * to make price requests in production environments.
-     * @dev This contract must hold the `ContractCreator` role with the Registry in order to register itself as a financial-template with the DVM.
-     * Note that `_registerContract` cannot be called from the constructor because this contract first needs to be given the `ContractCreator` role
-     * in order to register with the `Registry`. But, its address is not known until after deployment.
-     */
-    // function initialize() public {
-    //     _registerContract(new address[](0), address(this));
-    // }
+    function initialize() public {
+        initialized = true;
+        _registerContract(new address[](0), address(this));
+    }
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
-        registry.addMember(1, address(this));
-
-        //initialize();
-        //registry._registerContract(new address[](0), address(this));
+        //registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
 
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }

@@ -38,7 +38,7 @@ module.exports = async function(deployer, network, accounts) {
     const checkRole1 = await registry.holdsRole(_roleId, _expiringMultiPartyCreator);
     console.log("=== checkRole of expiringMultiPartyCreator ===", checkRole1);  // [Result]: True
 
-    const finder = await Finder.at(_finder);
+    const finder = await Finder.deployed();
     await finder.changeImplementationAddress(web3.utils.utf8ToHex(interfaceName.ExpiringMultiPartyCreator), _expiringMultiPartyCreator, {
         from: deployerAddress
     });
@@ -74,7 +74,6 @@ module.exports = async function(deployer, network, accounts) {
     const stakeholderRegistry = await StakeholderRegistry.deployed();
     const _stakeholderRegistry = StakeholderRegistry.address;
 
-    const finder = await Finder.at(_finder);
     await finder.changeImplementationAddress(web3.utils.utf8ToHex(interfaceName.StakeholderRegistry), _stakeholderRegistry, {
         from: deployerAddress
     });

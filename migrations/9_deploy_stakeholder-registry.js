@@ -12,7 +12,7 @@ var tokenAddressList = require('./tokenAddress/tokenAddress.js');
 var contractAddressList = require('./contractAddress/contractAddress.js');
 var walletAddressList = require('./walletAddress/walletAddress.js');
 
-const _collateralAddress = tokenAddressList["Kovan"]["DAI"];   // DAI address on Kovan
+const _collateralAddress = tokenAddressList["Rinkeby"]["DAI"];   // DAI address on Rinkeby
 const _createContractViaNew = CreateContractViaNew.address;
 const _registry = Registry.address;
 const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;

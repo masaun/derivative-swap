@@ -356,7 +356,8 @@ export default class StakeholderRegistry extends Component {
 
             //@dev - Create instance of DAI-contract
             let instanceDai = null;
-            let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
+            let DAI_ADDRESS = tokenAddressList["Rinkeby"]["DAI"]; //@dev - DAI（on Rinkeby）
+            //let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
             instanceDai = new web3.eth.Contract(
               Dai.abi,
               DAI_ADDRESS,

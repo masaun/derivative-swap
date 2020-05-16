@@ -27,10 +27,13 @@ module.exports = async function(deployer, network, accounts) {
     let ownerAddress = walletAddressList["WalletAddress1"];
 
     //@dev - Add Role to EMPCreator contractAddress
+    //     - enum Role { Owner, ContractCreator } 
     //     - enum RoleType { Invalid, Exclusive, Shared }
+    const _roleId = 1
     const registry = await Registry.deployed();
-    await registry.addMember(1, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
-    //await registry.addMember(2, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 2 is "Shared" Role
+    await registry.addMember(_roleId, _expiringMultiPartyCreator, { from: deployerAddress });  //@dev - 1 is "Exclusive" Role
+    const checkRole = await registry.holdsRole(_roleId, _expiringMultiPartyCreator);
+    console.log("checkRole", checkRole);    
 
     const params = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                      collateralAddress: _collateralAddress, 
@@ -54,12 +57,12 @@ module.exports = async function(deployer, network, accounts) {
                           _expiringMultiPartyCreator,
                           _registry,
                           _finder)
-                  .then(async function(stakeholderRegistry) {
-                       if(ownerAddress && ownerAddress!="") {
-                           console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
-                           await stakeholderRegistry.transferOwnership(ownerAddress);
-                       }
-                  });
+                  // .then(async function(stakeholderRegistry) {
+                  //      if(ownerAddress && ownerAddress!="") {
+                  //          console.log(`=== Transfering ownerhip to address ${ownerAddress} ===`)
+                  //          await stakeholderRegistry.transferOwnership(ownerAddress);
+                  //      }
+                  // });
 
     const stakeholderRegistry = await StakeholderRegistry.deployed();
 

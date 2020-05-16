@@ -1,6 +1,7 @@
 var StakeholderRegistry = artifacts.require("StakeholderRegistry");
 var IERC20 = artifacts.require("IERC20");
 var CreateContractViaNew = artifacts.require("CreateContractViaNew");
+var Finder = artifacts.require("Finder");
 var Registry = artifacts.require("Registry");
 var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
@@ -14,7 +15,8 @@ const _collateralAddress = tokenAddressList["Kovan"]["DAI"];   // DAI address on
 const _createContractViaNew = CreateContractViaNew.address;
 const _registry = Registry.address;
 const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
-const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
+const _finder = Finder.address;
+//const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
 
 const depositedAmount = web3.utils.toWei("0.1");    // 2.1 DAI which is deposited in deployed contract. 
 
@@ -46,8 +48,9 @@ module.exports = async function(deployer, network, accounts) {
                      minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                      timerAddress: '0x0000000000000000000000000000000000000000' }
     
-    //const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
-    //await expiringMultiPartyCreator.createExpiringMultiParty(params);
+    const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.at(_expiringMultiPartyCreator);
+    await expiringMultiPartyCreator.createExpiringMultiParty(params);
+
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address

@@ -5,7 +5,9 @@ var Finder = artifacts.require("Finder");
 var Registry = artifacts.require("Registry");
 var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var ExpiringMultiPartyCreator = artifacts.require("ExpiringMultiPartyCreator");
+var Timer = artifacts.require("Timer");
 const { interfaceName } = require("../utils/Constants.js");
+
 
 //@dev - Import from exported file
 var tokenAddressList = require('./tokenAddress/tokenAddress.js');
@@ -17,7 +19,7 @@ const _createContractViaNew = CreateContractViaNew.address;
 const _registry = Registry.address;
 const _expiringMultiPartyCreator = ExpiringMultiPartyCreator.address;
 const _finder = Finder.address;
-//const _finder = contractAddressList["Kovan"]["UMA"]["Finder"];
+const _timer = Timer.address;
 
 const depositedAmount = web3.utils.toWei("0.1");    // 2.1 DAI which is deposited in deployed contract. 
 
@@ -58,7 +60,7 @@ module.exports = async function(deployer, network, accounts) {
                      sponsorDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                      disputerDisputeRewardPct: { rawValue: web3.utils.toWei("0.1") }, 
                      minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
-                     timerAddress: '0x0000000000000000000000000000000000000000' }
+                     timerAddress: _timer }
     
     const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
     await expiringMultiPartyCreator.createExpiringMultiParty(params);

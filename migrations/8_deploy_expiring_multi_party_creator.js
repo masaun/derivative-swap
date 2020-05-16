@@ -16,7 +16,7 @@ const _collateralAddress = tokenAddressList["Rinkeby"]["DAI"]; // DAI address on
 const _addressWhitelist = AddressWhitelist.address;
 const _finder = Finder.address;
 const _tokenFactory = TokenFactory.address;
-const _timer = "0x0000000000000000000000000000000000000000";
+const _timer = Timer.address;
 
 
 module.exports = async function(deployer, network, accounts) {

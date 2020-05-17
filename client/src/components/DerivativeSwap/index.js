@@ -62,9 +62,12 @@ export default class DerivativeSwap extends Component {
 
         const currentSender = accounts[0];
         //let res = await registry.addMember(1, currentSender);
-        
-        let res3 = await expiring_multiparty_via_new.methods.createEMP(constructorParams).send({ from: currentSender });
-        console.log('=== new / createEMP() - ExpiringMultiPartyViaNew.sol ===', res3);
+ 
+        let res3 = await expiring_multiparty_via_new.methods.createEMPCreator().send({ from: currentSender });
+        console.log('=== new / createEMPCreator() - ExpiringMultiPartyViaNew.sol ===', res3);
+
+        let res4 = await expiring_multiparty_via_new.methods.createEMP(constructorParams).send({ from: currentSender });
+        console.log('=== createEMP() - ExpiringMultiPartyViaNew.sol ===', res4);
 
         //let res4 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
         //console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res4);

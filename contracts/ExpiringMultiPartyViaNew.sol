@@ -5,6 +5,8 @@ pragma experimental ABIEncoderV2;
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
 //import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
 //import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
+import "./uma/contracts/oracle/implementation/Registry.sol";
+
 
 /***
  * @notice - This contract is that ...
@@ -36,7 +38,11 @@ contract ExpiringMultiPartyViaNew {
 
 
     function createEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+        Registry registry = new Registry();
+        registry.addMember(1, address(this));
+
         ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(finderAddress, collateralTokenWhitelist, tokenFactoryAddress, timerAddress);
+        registry.addMember(1, address(expiringMultiPartyCreator));
         expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
 

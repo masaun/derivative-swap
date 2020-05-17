@@ -37,9 +37,8 @@ export default class DerivativeSwap extends Component {
         this._balanceOfContract = this._balanceOfContract.bind(this);
     }
 
-
     createEMP = async () => {
-        const { accounts, web3, dai, DAI_ADDRESS, expiring_multiparty_lib, stakeholder_registry, expiring_multiparty_via_new } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, expiring_multiparty_lib, stakeholder_registry, expiring_multiparty_via_new, registry } = this.state;
 
         const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                                     //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
@@ -61,7 +60,10 @@ export default class DerivativeSwap extends Component {
         let res2 = await stakeholder_registry.methods.checkRole(_roleId, _deployerAddress).call();
         console.log('=== checkRole of deployerAddress ===', res2);
 
-        let res3 = await expiring_multiparty_via_new.methods.createEMP(constructorParams).send({ from: accounts[0] });
+        const currentSender = accounts[0];
+        //let res = await registry.addMember(1, currentSender);
+        
+        let res3 = await expiring_multiparty_via_new.methods.createEMP(constructorParams).send({ from: currentSender });
         console.log('=== new / createEMP() - ExpiringMultiPartyViaNew.sol ===', res3);
 
         //let res4 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });

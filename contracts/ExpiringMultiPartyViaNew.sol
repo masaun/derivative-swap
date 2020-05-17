@@ -37,12 +37,26 @@ contract ExpiringMultiPartyViaNew {
     }
 
 
-    function createEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+    function createEMPCreator() 
+        public 
+        returns (bool _msgSenderHoldsRole, bool _addressThisHoldsRole, bool _expiringMultiPartyCreatorHoldsRole) 
+    {
         Registry registry = new Registry();
+        registry.addMember(1, msg.sender);
         registry.addMember(1, address(this));
 
         ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(finderAddress, collateralTokenWhitelist, tokenFactoryAddress, timerAddress);
         registry.addMember(1, address(expiringMultiPartyCreator));
+
+        return (registry.holdsRole(1, msg.sender),
+                registry.holdsRole(1, address(this)),
+                registry.holdsRole(1, address(expiringMultiPartyCreator)));
+    }
+
+    function createEMP(ExpiringMultiPartyCreator.Params memory params) 
+        public 
+        returns (bool) 
+    {
         expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
 

@@ -142,30 +142,11 @@ export default class DerivativeSwap extends Component {
 
 
     createNewToken = async () => {
-        const { accounts, web3, dai, collateral_token, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
-
-
-        console.log("=========== Test ==========")
+        const { accounts, web3, dai, collateral_token, synthetic_token, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
 
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
         ////////////////////////////////////////////////
-
-        //dev - 3. check that we now have synthetic tokens
-        let SyntheticToken = {};
-        SyntheticToken = require("../../../../build/contracts/SyntheticToken.json");  //@dev - SyntheticToken.sol
-        let instanceSyntheticToken = null;
-        let SYNTHETIC_TOKEN_ADDRESS = tokenAddressList["Kovan"]["UMA BTC Dominance July 2020"];
-        instanceSyntheticToken = new web3.eth.Contract(
-            SyntheticToken.abi,
-            SYNTHETIC_TOKEN_ADDRESS,
-        );
-        this.setState({ synthetic_token: instanceSyntheticToken, 
-                        SYNTHETIC_TOKEN_ADDRESS: SYNTHETIC_TOKEN_ADDRESS });
-        const { synthetic_token } = this.state;
-        console.log('=== instanceSyntheticToken ===', instanceSyntheticToken);
-
-
        
         // collateral token balance
         let balance1 = await dai.methods.balanceOf(accounts[0]).call();
@@ -288,6 +269,7 @@ export default class DerivativeSwap extends Component {
      
         let StakeholderRegistry = {};
         let Dai = {};
+        let SyntheticToken = {};
         let TokenFactory = {};
         let ExpiringMultiParty = {};
         let ExpiringMultiPartyLib = {};
@@ -298,6 +280,7 @@ export default class DerivativeSwap extends Component {
         try {
           StakeholderRegistry = require("../../../../build/contracts/StakeholderRegistry.json");  // Load artifact-file of StakeholderRegistry
           Dai = require("../../../../build/contracts/IERC20.json");    //@dev - DAI
+          SyntheticToken = require("../../../../build/contracts/SyntheticToken.json");  //@dev - SyntheticToken.sol
           TokenFactory = require("../../../../build/contracts/TokenFactory.json");  //@dev - TokenFactory.sol
           ExpiringMultiParty = require("../../../../build/contracts/ExpiringMultiParty.json");  //@dev - ExpiringMultiParty.sol
           ExpiringMultiPartyLib = require("../../../../build/contracts/ExpiringMultiPartyLib.json");
@@ -349,13 +332,20 @@ export default class DerivativeSwap extends Component {
 
             //@dev - Create instance of DAI-contract
             let instanceDai = null;
-            let DAI_ADDRESS = tokenAddressList["Rinkeby"]["DAI"]; //@dev - DAI（on Rinkeby）
-            //let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
+            let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
             instanceDai = new web3.eth.Contract(
               Dai.abi,
               DAI_ADDRESS,
             );
             console.log('=== instanceDai ===', instanceDai);
+
+            //@dev - Create instance of SyntheticToken.sol
+            let instanceSyntheticToken = null;
+            let SYNTHETIC_TOKEN_ADDRESS = tokenAddressList["Kovan"]["UMA-BTC-Dominance-July-2020"];
+            instanceSyntheticToken = new web3.eth.Contract(
+                SyntheticToken.abi,
+                SYNTHETIC_TOKEN_ADDRESS,
+            );
 
             //@dev - Create instance of TokenFactory.sol
             let instanceTokenFactory = null;
@@ -411,7 +401,6 @@ export default class DerivativeSwap extends Component {
             );
             console.log('=== instanceAddressWhitelist ===', instanceAddressWhitelist);
 
-
             if (StakeholderRegistry) {
               // Set web3, accounts, and contract to the state, and then proceed with an
               // example of interacting with the contract's methods.
@@ -427,6 +416,7 @@ export default class DerivativeSwap extends Component {
                 stakeholder_registry: instanceStakeholderRegistry,
                 dai: instanceDai,
                 collateral_token: instanceDai,
+                synthetic_token: instanceSyntheticToken,
                 token_factory: instanceTokenFactory,
                 expiring_multiparty_lib: instanceExpiringMultiPartyLib,
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
@@ -435,6 +425,7 @@ export default class DerivativeSwap extends Component {
                 address_whitelist: instanceAddressWhitelist,
                 STAKEHOLDER_REGISTRY_ADDRESS: STAKEHOLDER_REGISTRY_ADDRESS,
                 DAI_ADDRESS: DAI_ADDRESS,
+                SYNTHETIC_TOKEN_ADDRESS: SYNTHETIC_TOKEN_ADDRESS,
                 TOKEN_FACTORY_ADDRESS: TOKEN_FACTORY_ADDRESS,
                 EXPIRING_MULTIPARTY_LIB_ADDRESS: EXPIRING_MULTIPARTY_LIB_ADDRESS,
                 EXPIRING_MULTIPARTY_CREATOR_ADDRESS: EXPIRING_MULTIPARTY_CREATOR_ADDRESS,

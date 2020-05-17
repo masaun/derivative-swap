@@ -12,7 +12,7 @@ var tokenAddressList = require('./tokenAddress/tokenAddress.js');
 var contractAddressList = require('./contractAddress/contractAddress.js');
 var walletAddressList = require('./walletAddress/walletAddress.js');
 
-const _collateralAddress = tokenAddressList["Rinkeby"]["DAI"]; // DAI address on Rinkeby
+const _collateralAddress = tokenAddressList["Kovan"]["DAI"]; // DAI address on Kovan
 const _addressWhitelist = AddressWhitelist.address;
 const _finder = Finder.address;
 const _tokenFactory = TokenFactory.address;
@@ -51,5 +51,5 @@ module.exports = async function(deployer, network, accounts) {
     //     }
     // });
 
-     
+
 };

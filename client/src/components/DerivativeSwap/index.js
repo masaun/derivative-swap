@@ -96,7 +96,7 @@ export default class DerivativeSwap extends Component {
 
 
     _createExpiringMultiParty = async () => {
-        const { accounts, web3, dai, DAI_ADDRESS, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, synthetic_token, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
 
         const owner = await identifier_whitelist.methods.owner().call();
         console.log('=== owner ===', owner);  
@@ -152,13 +152,15 @@ export default class DerivativeSwap extends Component {
         let balance1 = await dai.methods.balanceOf(accounts[0]).call();
         console.log('=== balance of collateralToken ===', balance1);
 
-        // synthetic token balance
-        let balance2 = await synthetic_token.methods.isMinter(accounts[0]).call();
-        console.log('=== balance of syntheticToken ===', balance2);
+        // totalSupply of synthetic token
+        let totalSupply = await synthetic_token.methods.totalSupply().call();
+        console.log('=== totalSupply() of syntheticToken ===', totalSupply);
 
-        // position information
-        let position = await synthetic_token.methods.positions(accounts[0]).send({ from: accounts[0] });
-        console.log('=== balance of syntheticToken ===', position);
+        // mint synthetic token
+        const _recipient = accounts[0];
+        const _value = web3.utils.toWei("0.1");
+        let res = await synthetic_token.methods.mint(_recipient, _value).send({ from: accounts[0] });
+        console.log('=== mint() of syntheticToken ===', res);
     }
 
     // redeemToken = async () => {
@@ -341,11 +343,13 @@ export default class DerivativeSwap extends Component {
 
             //@dev - Create instance of SyntheticToken.sol
             let instanceSyntheticToken = null;
-            let SYNTHETIC_TOKEN_ADDRESS = tokenAddressList["Kovan"]["UMA-BTC-Dominance-July-2020"];
+            //let SYNTHETIC_TOKEN_ADDRESS = tokenAddressList["Kovan"]["UMA Synthetic Stocks May2020"];
+            let SYNTHETIC_TOKEN_ADDRESS = "0xBAA2F223B505a8646518f1D17bDe979cc80cF273"; // Oil_Jul20
             instanceSyntheticToken = new web3.eth.Contract(
                 SyntheticToken.abi,
                 SYNTHETIC_TOKEN_ADDRESS,
             );
+            console.log('=== instanceSyntheticToken ===', instanceSyntheticToken);
 
             //@dev - Create instance of TokenFactory.sol
             let instanceTokenFactory = null;

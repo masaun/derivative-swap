@@ -7,7 +7,7 @@ const Header = () => (
       <ul>
         <li><a href="/" className={styles.link}><span style={{ padding: "60px" }}> Home </span></a></li>
 
-        <li><a href="/uma-synthetic-tokens-hackmoney" className={styles.link}> UMA Synthetic Tokens HackMoney</a></li>
+        <li><a href="/derivative-swap" className={styles.link}> Derivative Swap </a></li>
       </ul>
     </nav>
   </div>

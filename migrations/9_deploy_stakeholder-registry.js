@@ -62,9 +62,14 @@ module.exports = async function(deployer, network, accounts) {
                      minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                      timerAddress: _timer }
     
-    const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
-    await expiringMultiPartyCreator.createExpiringMultiParty(params);
-    console.log("=== OK / expiringMultiPartyCreator.createExpiringMultiParty() ==="); // [Result]： Fail
+
+    // const expiringMultiPartyLib = await ExpiringMultiPartyLib.deployed();
+    // await expiringMultiPartyLib.deploy(params);
+    // console.log("=== OK / expiringMultiPartyLib.deploy() ==="); // [Result]：
+
+    // const expiringMultiPartyCreator = await ExpiringMultiPartyCreator.deployed();
+    // await expiringMultiPartyCreator.createExpiringMultiParty(params);
+    // console.log("=== OK / expiringMultiPartyCreator.createExpiringMultiParty() ==="); // [Result]： Implementation not found.
 
     await deployer.deploy(StakeholderRegistry,
                           _collateralAddress,  // ERC20 address

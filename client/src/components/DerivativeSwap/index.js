@@ -17,7 +17,7 @@ import { contractAddressList } from '../../data/contractAddress/contractAddress.
 import { tokenAddressList } from '../../data/tokenAddress/tokenAddress.js'
 
 
-export default class StakeholderRegistry extends Component {
+export default class DerivativeSwap extends Component {
     constructor(props) {    
         super(props);
 
@@ -142,21 +142,14 @@ export default class StakeholderRegistry extends Component {
 
 
     createNewToken = async () => {
-        const { accounts, web3, dai, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+        const { accounts, web3, dai, collateral_token, stakeholder_registry, token_factory, expiring_multiparty_creator, identifier_whitelist, registry, address_whitelist, DAI_ADDRESS, EXPIRING_MULTIPARTY_CREATOR_ADDRESS } = this.state;
+
+
+        console.log("=========== Test ==========")
 
         ////////////////////////////////////////////////
         /// Create new tokens from an existing contract
         ////////////////////////////////////////////////
-
-        //@dev - 1. we will create synthetic tokens from that contract.
-        const collateral_token = await dai;
-        //await collateralToken.allocateTo(accounts[0], web3.utils.toWei("10000"));
-        let res = await collateral_token.methods.approve(EXPIRING_MULTIPARTY_CREATOR_ADDRESS, web3.utils.toWei("10000")).send({ from: accounts[0] });
-        console.log('=== approve() ===', res);
-
-
-        //@dev - 2. We can now create a synthetic token position
-        //await expiring_multiparty_creator.methods.create({ rawValue: web3.utils.toWei("150") }, { rawValue: web3.utils.toWei("100") }).send({ from: accounts[0] });
 
         //dev - 3. check that we now have synthetic tokens
         let SyntheticToken = {};
@@ -175,7 +168,7 @@ export default class StakeholderRegistry extends Component {
 
        
         // collateral token balance
-        let balance1 = await collateral_token.methods.balanceOf(accounts[0]).call();
+        let balance1 = await dai.methods.balanceOf(accounts[0]).call();
         console.log('=== balance of collateralToken ===', balance1);
 
         // synthetic token balance
@@ -433,6 +426,7 @@ export default class StakeholderRegistry extends Component {
                 isMetaMask, 
                 stakeholder_registry: instanceStakeholderRegistry,
                 dai: instanceDai,
+                collateral_token: instanceDai,
                 token_factory: instanceTokenFactory,
                 expiring_multiparty_lib: instanceExpiringMultiPartyLib,
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
@@ -484,7 +478,8 @@ export default class StakeholderRegistry extends Component {
                               p={20} 
                               borderColor={"#E8E8E8"}
                         >
-                            <h4>UMA Synthetic Tokens HackMoney</h4> <br />
+                            <h4>Derivative Swap</h4><br /> 
+                            <h4>by using UMA Synthetic Tokens</h4> <br />
 
                             <Button size={'small'} mt={3} mb={2} onClick={this.createEMP}> Create EMP </Button> <br />
 

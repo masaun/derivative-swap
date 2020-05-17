@@ -309,6 +309,7 @@ export default class DerivativeSwap extends Component {
             console.log('=== instanceExpiringMultiPartyCreator ===', instanceExpiringMultiPartyCreator);
 
             // Create instance of contracts
+            let instanceExpiringMultiPartyViaNew = null;
             if (ExpiringMultiPartyViaNew.networks) {
               deployedNetwork = ExpiringMultiPartyViaNew.networks[networkId.toString()];
               if (deployedNetwork) {
@@ -366,7 +367,7 @@ export default class DerivativeSwap extends Component {
                 token_factory: instanceTokenFactory,
                 expiring_multiparty_lib: instanceExpiringMultiPartyLib,
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
-                expiring_multiparty_via_new: instanceExpiringMultiPartyViaNew
+                expiring_multiparty_via_new: instanceExpiringMultiPartyViaNew,
                 identifier_whitelist: instanceIdentifierWhitelist,
                 registry: instanceRegistry,
                 address_whitelist: instanceAddressWhitelist,

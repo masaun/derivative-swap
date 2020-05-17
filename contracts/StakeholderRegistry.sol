@@ -19,7 +19,7 @@ import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inheri
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
 //import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyLib.sol";
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
-//import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
+import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
 import "./uma/contracts/oracle/implementation/Finder.sol";
 import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
@@ -74,6 +74,11 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
     }
 
 
+    // function createEMP(Liquidatable.ConstructorParams memory params) public returns (bool) {
+    //     ExpiringMultiParty expiringMultiParty = new ExpiringMultiParty(params);
+    // }
+
+
     function initialize() public {
         initialized = true;
         _registerContract(new address[](0), address(this));
@@ -81,8 +86,6 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
         //@dev - Add Role to EMPCreator contractAddress
-        //registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
-
         address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
 

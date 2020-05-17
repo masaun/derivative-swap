@@ -97,8 +97,8 @@ module.exports = async function(deployer, network, accounts) {
     const checkRole2 = await registry.holdsRole(_roleId, stakeholderRegistry.address);
     console.log("=== checkRole of stakeholderRegistry ===", checkRole2);  // [Result]: True
 
-    await stakeholderRegistry.initialize();
-    console.log("- StakeholderRegistry is registered");
+    // await stakeholderRegistry.initialize();
+    // console.log("- StakeholderRegistry is registered");
 
 
 

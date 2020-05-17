@@ -13,7 +13,7 @@ var walletAddressList = require('./walletAddress/walletAddress.js');
 
 const DAI = tokenAddressList["Kovan"]["DAI"];   // DAI address on Kovan
 const FINDER = contractAddressList["Kovan"]["UMA"]["Finder"];
-const ADDRESS_WHITELIST = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
+//const ADDRESS_WHITELIST = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 const TOKEN_FACTORY = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
 const TIMER = '0x0000000000000000000000000000000000000000';
 
@@ -36,9 +36,19 @@ const TIMER = '0x0000000000000000000000000000000000000000';
 
 module.exports = async function(deployer, network, accounts) {
 
+    // Add collateralToken(=DAI) into whitelists.
+    await deployer.deploy(AddressWhitelist);
+    const collateralCurrencyWhitelist = await AddressWhitelist.deployed();
+    await collateralCurrencyWhitelist.addToWhitelist(DAI);
+    console.log('=== pass ===')
+
     await deployer.deploy(ExpiringMultiPartyLib);
     await deployer.link(ExpiringMultiPartyLib, ExpiringMultiPartyViaNew);
 
-    await deployer.deploy(ExpiringMultiPartyViaNew, FINDER, ADDRESS_WHITELIST, TOKEN_FACTORY, TIMER);
+    await deployer.deploy(ExpiringMultiPartyViaNew, 
+                          FINDER, 
+                          AddressWhitelist.address, 
+                          TOKEN_FACTORY, 
+                          TIMER);
     //await deployer.deploy(ExpiringMultiPartyViaNew, constructorParams);
 };

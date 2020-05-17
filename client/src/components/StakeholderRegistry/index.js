@@ -55,12 +55,16 @@ export default class StakeholderRegistry extends Component {
                                     minSponsorTokens: { rawValue: web3.utils.toWei("0.01") }, 
                                     timerAddress: '0x0000000000000000000000000000000000000000' }
 
-        const _roleId = 0;
+        const _roleId = 1;
         let res1 = await stakeholder_registry.methods.checkRoleOfExpiringMultiPartyCreator(_roleId).call();
         console.log('=== checkRole of ExpiringMultiPartyCreator ===', res1);
 
-        let res2 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
-        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res2);
+        const _deployerAddress = '0xd91df4880c64343e10F75d8E5f281BcBa4318e4b';
+        let res2 = await stakeholder_registry.methods.checkRole(_roleId, _deployerAddress).call();
+        console.log('=== checkRole of deployerAddress ===', res2);
+
+        let res3 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
+        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res3);
     }
  
 
@@ -352,7 +356,8 @@ export default class StakeholderRegistry extends Component {
 
             //@dev - Create instance of DAI-contract
             let instanceDai = null;
-            let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
+            let DAI_ADDRESS = tokenAddressList["Rinkeby"]["DAI"]; //@dev - DAI（on Rinkeby）
+            //let DAI_ADDRESS = tokenAddressList["Kovan"]["DAI"]; //@dev - DAI（on Kovan）
             instanceDai = new web3.eth.Contract(
               Dai.abi,
               DAI_ADDRESS,

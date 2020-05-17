@@ -39,7 +39,7 @@ export default class DerivativeSwap extends Component {
 
 
     createEMP = async () => {
-        const { accounts, web3, dai, DAI_ADDRESS, expiring_multiparty_lib, stakeholder_registry } = this.state;
+        const { accounts, web3, dai, DAI_ADDRESS, expiring_multiparty_lib, stakeholder_registry, expiring_multiparty_via_new } = this.state;
 
         const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
                                     //expirationTimestamp: "1585699200",    // "1585699200" is 2020-04-01T00:00:00.000Z
@@ -61,8 +61,8 @@ export default class DerivativeSwap extends Component {
         let res2 = await stakeholder_registry.methods.checkRole(_roleId, _deployerAddress).call();
         console.log('=== checkRole of deployerAddress ===', res2);
 
-        //let res3 = await stakeholder_registry.methods.createEMP(constructorParams).send({ from: accounts[0] });
-        //console.log('=== new / createEMP() - ExpiringMultiParty.sol ===', res3);
+        let res3 = await expiring_multiparty_via_new.methods.createEMP(constructorParams).send({ from: accounts[0] });
+        console.log('=== new / createEMP() - ExpiringMultiPartyViaNew.sol ===', res3);
 
         let res4 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
         console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res4);
@@ -204,6 +204,7 @@ export default class DerivativeSwap extends Component {
         let ExpiringMultiParty = {};
         let ExpiringMultiPartyLib = {};
         let ExpiringMultiPartyCreator = {};
+        let ExpiringMultiPartyViaNew = {};
         let IdentifierWhitelist = {};
         let Registry = {};
         let AddressWhitelist = {};
@@ -215,6 +216,7 @@ export default class DerivativeSwap extends Component {
           ExpiringMultiParty = require("../../../../build/contracts/ExpiringMultiParty.json");  //@dev - ExpiringMultiParty.sol
           ExpiringMultiPartyLib = require("../../../../build/contracts/ExpiringMultiPartyLib.json");
           ExpiringMultiPartyCreator = require("../../../../build/contracts/ExpiringMultiPartyCreator.json");  //@dev - ExpiringMultiPartyCreator.sol
+          ExpiringMultiPartyViaNew = require("../../../../build/contracts/ExpiringMultiPartyViaNew.json");
           IdentifierWhitelist = require("../../../../build/contracts/IdentifierWhitelist.json");  //@dev - IdentifierWhitelist.sol 
           Registry = require("../../../../build/contracts/Registry.json");  //@dev - Registry.sol  
           AddressWhitelist = require("../../../../build/contracts/AddressWhitelist.json");  //@dev - AddressWhitelist.sol 
@@ -306,6 +308,18 @@ export default class DerivativeSwap extends Component {
             );
             console.log('=== instanceExpiringMultiPartyCreator ===', instanceExpiringMultiPartyCreator);
 
+            // Create instance of contracts
+            if (ExpiringMultiPartyViaNew.networks) {
+              deployedNetwork = ExpiringMultiPartyViaNew.networks[networkId.toString()];
+              if (deployedNetwork) {
+                instanceExpiringMultiPartyViaNew = new web3.eth.Contract(
+                  ExpiringMultiPartyViaNew.abi,
+                  deployedNetwork && deployedNetwork.address,
+                );
+                console.log('=== instanceExpiringMultiPartyViaNew ===', instanceExpiringMultiPartyViaNew);
+              }
+            }
+
             //@dev - Create instance of IdentifierWhitelist.sol
             let instanceIdentifierWhitelist = null;
             let IDENTIFIER_WHITELIST_ADDRESS = contractAddressList["Kovan"]["UMA"]["IdentifierWhitelist"];  //@dev - IdentifierWhitelist.sol from UMA
@@ -333,7 +347,7 @@ export default class DerivativeSwap extends Component {
             );
             console.log('=== instanceAddressWhitelist ===', instanceAddressWhitelist);
 
-            if (StakeholderRegistry) {
+            if (StakeholderRegistry || ExpiringMultiPartyViaNew) {
               // Set web3, accounts, and contract to the state, and then proceed with an
               // example of interacting with the contract's methods.
               this.setState({ 
@@ -352,6 +366,7 @@ export default class DerivativeSwap extends Component {
                 token_factory: instanceTokenFactory,
                 expiring_multiparty_lib: instanceExpiringMultiPartyLib,
                 expiring_multiparty_creator: instanceExpiringMultiPartyCreator,
+                expiring_multiparty_via_new: instanceExpiringMultiPartyViaNew
                 identifier_whitelist: instanceIdentifierWhitelist,
                 registry: instanceRegistry,
                 address_whitelist: instanceAddressWhitelist,

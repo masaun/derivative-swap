@@ -57,7 +57,7 @@ module.exports = async function(deployer, network, accounts) {
     // Add Role 
     await deployer.deploy(Registry);
     const _roleId = 1
-    const registry = Registry.deployed();
+    const registry = await Registry.deployed();
     await registry.addMember(_roleId, ExpiringMultiPartyViaNew.address);
     console.log("- Granted ExpiringMultiPartyViaNew contract right to register itself with DVM");
 

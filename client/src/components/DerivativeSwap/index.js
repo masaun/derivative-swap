@@ -61,11 +61,11 @@ export default class DerivativeSwap extends Component {
         let res2 = await stakeholder_registry.methods.checkRole(_roleId, _deployerAddress).call();
         console.log('=== checkRole of deployerAddress ===', res2);
 
-        let res3 = await stakeholder_registry.methods.createEMP(constructorParams).send({ from: accounts[0] });
-        console.log('=== new / createEMP() - ExpiringMultiParty.sol ===', res3);
+        //let res3 = await stakeholder_registry.methods.createEMP(constructorParams).send({ from: accounts[0] });
+        //console.log('=== new / createEMP() - ExpiringMultiParty.sol ===', res3);
 
         let res4 = await stakeholder_registry.methods.generateEMP(constructorParams).send({ from: accounts[0] });
-        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res3);
+        console.log('=== createExpiringMultiParty() - ExpiringMultiPartyCreator.sol ===', res4);
     }
  
 

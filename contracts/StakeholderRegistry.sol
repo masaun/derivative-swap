@@ -85,8 +85,10 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
     }
 
     function generateEMP(ExpiringMultiPartyCreator.Params memory params) public returns (bool) {
+        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+
         //@dev - Add Role to EMPCreator contractAddress
-        address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
+        //address EXPIRING_MULTIPARTY = expiringMultiPartyCreator.createExpiringMultiParty(params);
     }
 
     function checkRoleOfExpiringMultiPartyCreator(uint256 _roleId) public view returns (bool isMember) {

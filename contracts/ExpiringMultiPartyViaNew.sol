@@ -1,6 +1,11 @@
 pragma solidity ^0.6.0;
 pragma experimental ABIEncoderV2;
 
+// Storage
+import "./storage/McStorage.sol";
+import "./storage/McConstants.sol";
+
+
 // SyntheticToken from UMA
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
 //import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
@@ -11,7 +16,7 @@ import "./uma/contracts/oracle/implementation/Registry.sol";
 /***
  * @notice - This contract is that ...
  **/
-contract ExpiringMultiPartyViaNew {
+contract ExpiringMultiPartyViaNew is McStorage, McConstants {
     using SafeMath for uint;
 
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
@@ -37,10 +42,7 @@ contract ExpiringMultiPartyViaNew {
     }
 
 
-    function createEMPCreator() 
-        public 
-        returns (bool _msgSenderHoldsRole, bool _addressThisHoldsRole, bool _expiringMultiPartyCreatorHoldsRole) 
-    {
+    function createEMPCreator() public returns (bool) {
         Registry registry = new Registry();
         registry.addMember(1, msg.sender);
         registry.addMember(1, address(this));
@@ -48,9 +50,10 @@ contract ExpiringMultiPartyViaNew {
         ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(finderAddress, collateralTokenWhitelist, tokenFactoryAddress, timerAddress);
         registry.addMember(1, address(expiringMultiPartyCreator));
 
-        return (registry.holdsRole(1, msg.sender),
-                registry.holdsRole(1, address(this)),
-                registry.holdsRole(1, address(expiringMultiPartyCreator)));
+        emit CreateEMPCreator(registry.holdsRole(1, msg.sender),
+                              registry.holdsRole(1, address(this)),
+                              registry.holdsRole(1, address(expiringMultiPartyCreator))
+        );
     }
 
     function createEMP(ExpiringMultiPartyCreator.Params memory params) 

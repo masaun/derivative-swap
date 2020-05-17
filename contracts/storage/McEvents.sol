@@ -5,6 +5,13 @@ import "./McObjects.sol";
 
 contract McEvents {
 
+    event CreateEMPCreator(
+        bool _msgSenderHoldsRole, 
+        bool _addressThisHoldsRole, 
+        bool _expiringMultiPartyCreatorHoldsRole
+    );
+
+
     /***
      * @dev - Example
      **/

@@ -4,6 +4,7 @@ var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var Finder = artifacts.require("Finder");
 var AddressWhitelist = artifacts.require("AddressWhitelist");
 var TokenFactory = artifacts.require("TokenFactory");
+var Registry = artifacts.require("Registry");
 
 
 //@dev - Import from exported file
@@ -16,6 +17,7 @@ const FINDER = contractAddressList["Kovan"]["UMA"]["Finder"];
 //const ADDRESS_WHITELIST = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
 const TOKEN_FACTORY = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
 const TIMER = '0x0000000000000000000000000000000000000000';
+//const REGISTRY = contractAddressList["Kovan"]["UMA"]["Registry"];
 
 // const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z
 //                             withdrawalLiveness: "1000",
@@ -51,4 +53,14 @@ module.exports = async function(deployer, network, accounts) {
                           TOKEN_FACTORY, 
                           TIMER);
     //await deployer.deploy(ExpiringMultiPartyViaNew, constructorParams);
+
+    // Add Role 
+    await deployer.deploy(Registry);
+    const _roleId = 1
+    const registry = Registry.deployed();
+    await registry.addMember(_roleId, ExpiringMultiPartyViaNew.address);
+    console.log("- Granted ExpiringMultiPartyViaNew contract right to register itself with DVM");
+
+    const checkRole2 = await registry.holdsRole(_roleId, ExpiringMultiPartyViaNew.address);
+    console.log("=== checkRole of ExpiringMultiPartyViaNew.sol ===", checkRole2);  // [Result]: True
 };

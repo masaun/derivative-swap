@@ -5,9 +5,6 @@ pragma experimental ABIEncoderV2;
 import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
-// Original Contract
-import "./CreateContractViaNew.sol";
-
 // SyntheticToken from UMA
 import "./uma/contracts/common/implementation/AddressWhitelist.sol";
 //import "./uma/contracts/financial-templates/common/FeePayer.sol";
@@ -30,7 +27,6 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
     using SafeMath for uint;
 
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
-    CreateContractViaNew public createContractViaNew;
 
     address DAI_ADDRESS = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa; // Kovan
     address finderAddress;
@@ -43,8 +39,7 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
         address _finderAddress,
         address _collateralTokenWhitelist,
         address _tokenFactoryAddress,
-        address _timerAddress,
-        address _createContractViaNew
+        address _timerAddress
     ) public {
         //expiringMultiPartyCreator = ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 

@@ -33,10 +33,10 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
     CreateContractViaNew public createContractViaNew;
 
     address DAI_ADDRESS = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa; // Kovan
-    // address finderAddress;
-    // address collateralTokenWhitelist;
-    // address tokenFactoryAddress;
-    // address timerAddress;
+    address finderAddress;
+    address collateralTokenWhitelist;
+    address tokenFactoryAddress;
+    address timerAddress;
 
     //constructor(Liquidatable.ConstructorParams memory params) public {}
     constructor(
@@ -46,7 +46,6 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
         address _timerAddress,
         address _createContractViaNew
     ) public {
-        createContractViaNew = CreateContractViaNew(_createContractViaNew);
         //expiringMultiPartyCreator = ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
         // finderAddress = _finderAddress;
@@ -57,18 +56,15 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
 
 
     function createEMPCreator() public returns (bool) {
-        //@dev - Call from createContractViaNew() method
-        TokenFactory tokenFactory;
-        AddressWhitelist addressWhitelist;
-        Finder finder;
-        Timer timer;
+        AddressWhitelist addressWhitelist = new AddressWhitelist();
+        Finder finder = new Finder();
+        TokenFactory tokenFactory = new TokenFactory();
+        Timer timer = new Timer();
 
-        (addressWhitelist, finder, tokenFactory, timer) = createContractViaNew.createContractViaNew();
-
-        address collateralTokenWhitelist = address(addressWhitelist);
-        address finderAddress = address(finder);
-        address tokenFactoryAddress = address(tokenFactory);
-        address timerAddress = address(timer);
+        finderAddress = address(finder);
+        collateralTokenWhitelist = address(addressWhitelist);
+        tokenFactoryAddress = address(tokenFactory);
+        timerAddress = address(timer);
 
         addressWhitelist.addToWhitelist(DAI_ADDRESS);
 

@@ -28,22 +28,21 @@ contract CreateContractViaNew {
 
     function createContractViaNew() 
         public 
-        returns (AddressWhitelist addressWhitelist, 
+        returns (IdentifierWhitelist identifierWhitelist, 
+                 Registry registry, 
+                 AddressWhitelist addressWhitelist, 
                  Finder finder,
                  TokenFactory tokenFactory,
-                 //IdentifierWhitelist identifierWhitelist, 
-                 //Registry registry, 
                  Timer timer) 
     {
-        //IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
-        //Registry registry = new Registry();
+        IdentifierWhitelist identifierWhitelist = new IdentifierWhitelist();
+        Registry registry = new Registry();
         AddressWhitelist addressWhitelist = new AddressWhitelist();
         Finder finder = new Finder();
         TokenFactory tokenFactory = new TokenFactory();
         Timer timer = new Timer();
 
-        return (addressWhitelist, finder, tokenFactory, timer);
-        //return (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer);
+        return (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer);
     }
 
 }

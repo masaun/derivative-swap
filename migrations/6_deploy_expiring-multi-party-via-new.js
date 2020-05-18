@@ -4,8 +4,8 @@ var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var Finder = artifacts.require("Finder");
 var AddressWhitelist = artifacts.require("AddressWhitelist");
 var TokenFactory = artifacts.require("TokenFactory");
+var Timer = artifacts.require("Timer");
 var Registry = artifacts.require("Registry");
-
 
 //@dev - Import from exported file
 var tokenAddressList = require('./tokenAddress/tokenAddress.js');
@@ -13,10 +13,10 @@ var contractAddressList = require('./contractAddress/contractAddress.js');
 var walletAddressList = require('./walletAddress/walletAddress.js');
 
 const DAI = tokenAddressList["Kovan"]["DAI"];   // DAI address on Kovan
-const FINDER = contractAddressList["Kovan"]["UMA"]["Finder"];
-//const ADDRESS_WHITELIST = contractAddressList["Kovan"]["UMA"]["AddressWhitelist"];
-const TOKEN_FACTORY = contractAddressList["Kovan"]["UMA"]["TokenFactory"];
-const TIMER = '0x0000000000000000000000000000000000000000';
+const FINDER = Finder.address;
+//const ADDRESS_WHITELIST = AddressWhitelist.address;
+const TOKEN_FACTORY = TokenFactory.address;
+const TIMER = Timer.address;
 //const REGISTRY = contractAddressList["Kovan"]["UMA"]["Registry"];
 
 // const constructorParams = { expirationTimestamp: "1590969600",      // "1588291200" is 2020-06-01T00:00:00.000Z

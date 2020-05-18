@@ -43,25 +43,25 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
     ) public {
         //expiringMultiPartyCreator = ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        // finderAddress = _finderAddress;
-        // collateralTokenWhitelist = _collateralTokenWhitelist;
-        // tokenFactoryAddress = _tokenFactoryAddress;
-        // timerAddress = _timerAddress;
+        finderAddress = _finderAddress;
+        collateralTokenWhitelist = _collateralTokenWhitelist;
+        tokenFactoryAddress = _tokenFactoryAddress;
+        timerAddress = _timerAddress;
     }
 
 
     function createEMPCreator() public returns (bool) {
-        AddressWhitelist addressWhitelist = new AddressWhitelist();
-        Finder finder = new Finder();
-        TokenFactory tokenFactory = new TokenFactory();
-        Timer timer = new Timer();
+        // AddressWhitelist addressWhitelist = new AddressWhitelist();
+        // Finder finder = new Finder();
+        // TokenFactory tokenFactory = new TokenFactory();
+        // Timer timer = new Timer();
 
-        finderAddress = address(finder);
-        collateralTokenWhitelist = address(addressWhitelist);
-        tokenFactoryAddress = address(tokenFactory);
-        timerAddress = address(timer);
+        // finderAddress = address(finder);
+        // collateralTokenWhitelist = address(addressWhitelist);
+        // tokenFactoryAddress = address(tokenFactory);
+        // timerAddress = address(timer);
 
-        addressWhitelist.addToWhitelist(DAI_ADDRESS);
+        // addressWhitelist.addToWhitelist(DAI_ADDRESS);
 
 
         Registry registry = new Registry();

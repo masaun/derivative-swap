@@ -1,4 +1,5 @@
 var ExpiringMultiPartyViaNew = artifacts.require("ExpiringMultiPartyViaNew");
+var CreateContractViaNew = artifacts.require("CreateContractViaNew");
 
 var ExpiringMultiPartyLib = artifacts.require("ExpiringMultiPartyLib");
 var Finder = artifacts.require("Finder");
@@ -51,7 +52,8 @@ module.exports = async function(deployer, network, accounts) {
                           FINDER, 
                           AddressWhitelist.address, 
                           TOKEN_FACTORY, 
-                          TIMER);
+                          TIMER,
+                          CreateContractViaNew.address);
     //await deployer.deploy(ExpiringMultiPartyViaNew, constructorParams);
 
     // Add Role 

@@ -104,32 +104,32 @@ contract StakeholderRegistry is ContractCreator, OwnableOriginal(msg.sender), Mc
 
     
 
-    function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {
-        //@dev - Call from createContractViaNew() method
-        TokenFactory tokenFactory;
-        IdentifierWhitelist identifierWhitelist;
-        Registry registry;
-        AddressWhitelist addressWhitelist;
-        Finder finder;
-        Timer timer;
+    // function createSyntheticTokenPosition(ExpiringMultiPartyCreator.Params memory constructorParams) public returns (address _collateralTokenWhitelist, address _finderAddress, address _tokenFactoryAddress, address _timerAddress) {
+    //     //@dev - Call from createContractViaNew() method
+    //     TokenFactory tokenFactory;
+    //     IdentifierWhitelist identifierWhitelist;
+    //     Registry registry;
+    //     AddressWhitelist addressWhitelist;
+    //     Finder finder;
+    //     Timer timer;
 
-        (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer) = createContractViaNew.createContractViaNew();
+    //     (identifierWhitelist, registry, addressWhitelist, finder, tokenFactory, timer) = createContractViaNew.createContractViaNew();
 
-        //@dev - Create ExpiringMultiParty
-        identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
-        registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
-        addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
+    //     //@dev - Create ExpiringMultiParty
+    //     identifierWhitelist.addSupportedIdentifier(constructorParams.priceFeedIdentifier);
+    //     registry.addMember(1, EXPIRING_MULTIPARTY_CREATOR);
+    //     addressWhitelist.addToWhitelist(constructorParams.collateralAddress);
 
-        address _collateralTokenWhitelist = address(addressWhitelist);
-        address _finderAddress = address(finder);
-        address _tokenFactoryAddress = address(tokenFactory);
-        address _timerAddress = address(timer);
+    //     address _collateralTokenWhitelist = address(addressWhitelist);
+    //     address _finderAddress = address(finder);
+    //     address _tokenFactoryAddress = address(tokenFactory);
+    //     address _timerAddress = address(timer);
 
-        //ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
+    //     //ExpiringMultiPartyCreator expiringMultiPartyCreator = new ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
-        return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
-    }
+    //     // address EXPIRING_MULTIPARTY_ADDRESS = expiringMultiPartyCreator.createExpiringMultiParty(constructorParams);
+    //     return (_collateralTokenWhitelist, _finderAddress, _tokenFactoryAddress, _timerAddress);
+    // }
 
 
 

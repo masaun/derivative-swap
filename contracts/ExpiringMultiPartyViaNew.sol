@@ -5,12 +5,22 @@ pragma experimental ABIEncoderV2;
 import "./storage/McStorage.sol";
 import "./storage/McConstants.sol";
 
+// Original Contract
+import "./CreateContractViaNew.sol";
 
 // SyntheticToken from UMA
+import "./uma/contracts/common/implementation/AddressWhitelist.sol";
+//import "./uma/contracts/financial-templates/common/FeePayer.sol";
+import "./uma/contracts/financial-templates/common/TokenFactory.sol";  // Inherit SyntheticToken.sol
+import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
+//import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyLib.sol";
 import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiPartyCreator.sol";
-//import "./uma/contracts/financial-templates/expiring-multiparty/ExpiringMultiParty.sol";
-//import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
+import "./uma/contracts/financial-templates/expiring-multiparty/Liquidatable.sol";
 import "./uma/contracts/oracle/implementation/Registry.sol";
+import "./uma/contracts/oracle/implementation/Finder.sol";
+import "./uma/contracts/oracle/implementation/IdentifierWhitelist.sol";
+import "./uma/contracts/oracle/implementation/ContractCreator.sol";
+
 
 
 /***
@@ -20,29 +30,49 @@ contract ExpiringMultiPartyViaNew is McStorage, McConstants {
     using SafeMath for uint;
 
     ExpiringMultiPartyCreator public expiringMultiPartyCreator;
+    CreateContractViaNew public createContractViaNew;
 
-    address finderAddress;
-    address collateralTokenWhitelist;
-    address tokenFactoryAddress;
-    address timerAddress;
+    address DAI_ADDRESS = 0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa; // Kovan
+    // address finderAddress;
+    // address collateralTokenWhitelist;
+    // address tokenFactoryAddress;
+    // address timerAddress;
 
     //constructor(Liquidatable.ConstructorParams memory params) public {}
     constructor(
         address _finderAddress,
         address _collateralTokenWhitelist,
         address _tokenFactoryAddress,
-        address _timerAddress
+        address _timerAddress,
+        address _createContractViaNew
     ) public {
+        createContractViaNew = CreateContractViaNew(_createContractViaNew);
         //expiringMultiPartyCreator = ExpiringMultiPartyCreator(_finderAddress, _collateralTokenWhitelist, _tokenFactoryAddress, _timerAddress);
 
-        finderAddress = _finderAddress;
-        collateralTokenWhitelist = _collateralTokenWhitelist;
-        tokenFactoryAddress = _tokenFactoryAddress;
-        timerAddress = _timerAddress;
+        // finderAddress = _finderAddress;
+        // collateralTokenWhitelist = _collateralTokenWhitelist;
+        // tokenFactoryAddress = _tokenFactoryAddress;
+        // timerAddress = _timerAddress;
     }
 
 
     function createEMPCreator() public returns (bool) {
+        //@dev - Call from createContractViaNew() method
+        TokenFactory tokenFactory;
+        AddressWhitelist addressWhitelist;
+        Finder finder;
+        Timer timer;
+
+        (addressWhitelist, finder, tokenFactory, timer) = createContractViaNew.createContractViaNew();
+
+        address collateralTokenWhitelist = address(addressWhitelist);
+        address finderAddress = address(finder);
+        address tokenFactoryAddress = address(tokenFactory);
+        address timerAddress = address(timer);
+
+        addressWhitelist.addToWhitelist(DAI_ADDRESS);
+
+
         Registry registry = new Registry();
         registry.addMember(1, msg.sender);
         registry.addMember(1, address(this));

@@ -3,7 +3,10 @@
 
 ***
 ## 【Introduction of Derivative Swap by using UMA's Priceless Synthetic Tokens】
-- 
+- This repos is dApp for derivative swap by using UMA's Priceless Synthetic Tokens.
+  - One of UMA's Priceless Synthetic Tokens feature is creating various pair (derivative). That is able to track price not only cryptocurrency, but also stock prices(Such as the stock price of TSLA, etc...) and commodity prices(Such as the commodity price of Oil)
+  - Following a feature above, I have tried to build derivative swap by using UMA's Priceless Synthetic Tokens.
+  - It has potential to be involved stock and bond and commodity into DeFi(decentralized finance) market and be able to trade them with various pair. In case it is realized, it can bring more liquidity and connectivity (between crypto assets and traditional assets) into DeFi market.
 
 &nbsp;
 
@@ -14,7 +17,7 @@
 
 ***
 
-## 【Setup】
+## 【Setup】(※ Implementation is in progress)
 ### Setup wallet by using Metamask
 1. Add MetaMask to browser (Chrome or FireFox or Opera or Brave)    
 https://metamask.io/  
@@ -22,18 +25,18 @@ https://metamask.io/
 
 2. Adjust appropriate newwork below 
 ```
-Rinkeby Test Network
+Kovan Test Network
 ```
 
 &nbsp;
 
 
 ### Setup backend
-1. Deploy contracts to Rinkeby Test Network
+1. Deploy contracts to Kovan Test Network
 ```
 (root directory)
 
-$ npm run migrate:Rinkeby
+$ npm run migrate:Kovan
 ```
 
 &nbsp;
@@ -65,7 +68,7 @@ http://127.0.0.1:3000/idle-insurance-fund
     - [Blog]：Announcing the UMA Synthetic Token Builder
     https://medium.com/uma-project/announcing-the-uma-synthetic-token-builder-8bf37c645e94
 
-    - [Demo dApp📲]：
+    - [Demo dApp]：
         - Synthetic Token Builder（@ Rinekby ）
         https://tokenbuilder.umaproject.org/
 

@@ -94,7 +94,14 @@ http://127.0.0.1:3000/derivative-swap
           - Kovan Synthetic Tokens  
             https://docs.umaproject.org/uma/developer_reference/contract_addresses.html#_kovan_network_id_42  
 
+    - [Video]：  
+      - https://www.crowdcast.io/e/defi-discussions/18  
+
     - [Demo dApp]：  
         - Synthetic Token Builder（Rinekby）  
         https://tokenbuilder.umaproject.org/  
         （ https://medium.com/uma-project/announcing-the-uma-synthetic-token-builder-8bf37c645e94 ）
+
+    - [Article]：　  
+      - HackMoney#UMA  
+        https://medium.com/uma-project/build-with-uma-at-hackmoney-48fd56d2eccc  
